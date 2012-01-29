@@ -1,13 +1,13 @@
-# Func\`d
+# Func'd
 
 Template engine in the style of Builder, Markaby, Erector.
 
-* No pre-compilation needed, just functions
-* Layouts
-* Partials
 * Blocks
-* Strings are escaped
-* Mixin custom blocks
+* Layouts
+* Mixins
+* Just functions
+* Partials
+* Safe HTML
 
 ## Installation
 

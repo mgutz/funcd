@@ -61,10 +61,10 @@ Mixins
 Safe HTML
 
     # <a>1 &lt; 2</a>
-    Funcd.render -> @a "1 < 2"
+    Funcd.render (t) -> t.a "1 < 2"
 
     # <a><i>apple</i></a>
-    Funcd.render -> @a @raw("<i>apple</i>")
+    Funcd.render (t) -> t.a t.raw("<i>apple</i>")
 
 
 OOP if you prefer

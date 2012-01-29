@@ -19,8 +19,7 @@ Using
 
     Funcd = require("funcd")
 
-
-Should had layouts and partials
+Layouts and partials
 
     layout = (t) ->
       t.doctype 5
@@ -40,38 +39,35 @@ Should had layouts and partials
       t.block "body", ->
         t.h1 "Simple Page"
         t.div "Hello #{name}"
-        t.render footer, "page1"
+        footer t, "page1"
 
-    html = Funcd.render(pretty: true, page, "kitty!")
+    html = Funcd.render(page, "kitty!")
 
 
-Should allow mixins
+Mixins
 
     mixins =
-      warning: (t, attrs, name, block) ->
-        attrs.class = 'warning'
-        t.div attrs, ->
-          t.text name
-          t.render block
-
       info: (t, block) ->
         t.div class: 'info', block
 
     template = (t) ->
-      t.warning id: "item", "foo", "bar"
       t.info ->
-        t.p "bah"
+        t.div "bah"
 
-    html = Funcd.render(mixins: mixins, template)
-
-
-Should escape by default
-
-    assert.equal "<a>1 &lt; 2</a>", Funcd.render -> @a "1 < 2"
-    assert.equal "<a><i>apple</i></a>", Funcd.render -> @a @raw("<i>apple</i>")
+    # <div class="info"><div>bah</div></div>
+    Funcd.render mixins: mixins, template
 
 
-Should allow OOP style layouts
+Safe HTML
+
+    # <a>1 &lt; 2</a>
+    Funcd.render -> @a "1 < 2"
+
+    # <a><i>apple</i></a>
+    Funcd.render -> @a @raw("<i>apple</i>")
+
+
+OOP if you prefer
 
     class Layout extends Funcd
       template: ->
@@ -86,4 +82,5 @@ Should allow OOP style layouts
 
     page = new Page
 
-    assert.equal "<html><head></head><body><p>foo</p></body></html>", page.template()
+    # <html><head></head><body><p>foo</p></body></html>
+    page.template()

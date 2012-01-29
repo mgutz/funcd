@@ -50,6 +50,16 @@ mergeElements = (args...) ->
       result.push element unless element in result
   result
 
+
+
+# Safely escapes HTML per
+#
+# Read http://www.squarefree.com/securitytips/web-developers.html
+#
+# @param {String} value
+escapeHtml = (value) ->
+  value.replace htmlChars, replaceToken
+
 tokensToReplace =
     '&': '&amp;'
     '<': '&lt;'
@@ -60,10 +70,6 @@ replaceToken = (token) ->
     tokensToReplace[token] || token
 
 htmlChars = /[&<>"']/g
-
-# http://www.squarefree.com/securitytips/web-developers.html
-escapeHtml = (value) ->
-  value.replace htmlChars, replaceToken
 
 
 # Builds the attribute list for a tag.
@@ -234,14 +240,15 @@ mixinShortTag = (tag) ->
     @buffer += @lead + "<#{tag}#{attrList}/>" + @eol
 
 
-for tag in mergeElements(elements.full, elements.obsoleteFull)
-  mixinTag tag
+# Code to run
+do ->
+  for tag in mergeElements(elements.full, elements.obsoleteFull)
+    mixinTag tag
 
-for tag in mergeElements(elements.short, elements.obsoleteShort)
-  mixinShortTag tag
+  for tag in mergeElements(elements.short, elements.obsoleteShort)
+    mixinShortTag tag
 
-
-if module && module.exports
-  module.exports = Funcd
-else
-  window.Funcd = Funcd
+  if module && module.exports
+    module.exports = Funcd
+  else
+    window.Funcd = Funcd

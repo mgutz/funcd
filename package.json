@@ -1,7 +1,7 @@
 {
   "author": "Mario Gutierrez <mario@mgutz.com> (http://mgutz.com)",
   "name": "funcd",
-  "description": "Template engine in the flavor of Builder, Markaby or Erector",
+  "description": "Func'd Template engine using functions in the flavor of Builder, Markaby or Erector",
   "version": "0.1.0",
   "homepage": "http://mgutz.github.com/funcd",
   "repository": {

@@ -372,7 +372,11 @@ http://mgutz.github.com</p>
 <span class="k">for</span> <span class="nx">tag</span> <span class="k">in</span> <span class="nx">mergeElements</span><span class="p">(</span><span class="nx">elements</span><span class="p">.</span><span class="nx">short</span><span class="p">,</span> <span class="nx">elements</span><span class="p">.</span><span class="nx">obsoleteShort</span><span class="p">)</span>
   <span class="nx">mixinShortTag</span> <span class="nx">tag</span>
 
-<span class="nv">module.exports = </span><span class="nx">Funcd</span></pre></div>
+
+<span class="k">if</span> <span class="nx">module</span> <span class="o">&amp;&amp;</span> <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span>
+  <span class="nv">module.exports = </span><span class="nx">Funcd</span>
+<span class="k">else</span>
+  <span class="nb">window</span><span class="p">.</span><span class="nv">Funcd = </span><span class="nx">Funcd</span></pre></div>
       </td>
     </tr>
   </table>

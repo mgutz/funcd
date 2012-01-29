@@ -1,0 +1,24 @@
+{
+  "author": "Mario Gutierrez <mario@mgutz.com> (http://mgutz.com)",
+  "name": "funcd",
+  "description": "Template engine in the flavor of Builder, Markaby or Erector",
+  "version": "0.1.0",
+  "homepage": "http://mgutz.github.com/funcd",
+  "repository": {
+    "url": "https://github.com/mgutz/funcd.git"
+  },
+  "engines": {
+    "node": "~0.6"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "coffee-script": "",
+    "mocha": "",
+    "chai": ""
+  },
+  "optionalDependencies": {},
+  "scripts": {
+    "test": "cake test"
+  }
+}

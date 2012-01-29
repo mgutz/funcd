@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>funcdTest.coffee</title>
+  <link rel="stylesheet" href="http://jashkenas.github.com/docco/resources/docco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div id="jump_to">
+    Jump To &hellip;
+    <div id="jump_wrapper">
+      <div id="jump_page">
+          <a class="source" href="../index.html">index.coffee</a>
+          <a class="source" href="../lib/funcd.html">funcd.coffee</a>
+          <a class="source" href="funcdTest.html">funcdTest.coffee</a>
+      </div>
+    </div>
+  </div>
+  <table cellspacing=0 cellpadding=0>
+  <thead>
+    <tr>
+      <th class=docs><h1>funcdTest.coffee</h1></th>
+      <th class=code></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id='section-1'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-1">&#182;</a>
+        </div>
+        
+      </td>
+      <td class=code>
+        <div class='highlight'><pre><span class="nv">Funcd = </span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;..&#39;</span><span class="p">)</span>
+<span class="p">{</span><span class="nx">assert</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;chai&#39;</span><span class="p">)</span>
+
+<span class="nv">module.exports =</span>
+
+  <span class="s2">&quot;should have short tags&quot;</span><span class="o">:</span> <span class="o">-&gt;</span>
+    <span class="nx">assert</span><span class="p">.</span><span class="nx">equal</span> <span class="s2">&quot;&lt;br/&gt;&quot;</span><span class="p">,</span> <span class="nx">Funcd</span><span class="p">.</span><span class="nx">render</span> <span class="nf">(t) -&gt;</span> <span class="nx">t</span><span class="p">.</span><span class="nx">br</span><span class="p">()</span>
+
+
+  <span class="s2">&quot;should have full tags&quot;</span><span class="o">:</span> <span class="o">-&gt;</span>
+    <span class="nx">assert</span><span class="p">.</span><span class="nx">equal</span> <span class="s2">&quot;&lt;div&gt;foo&lt;/div&gt;&quot;</span><span class="p">,</span> <span class="nx">Funcd</span><span class="p">.</span><span class="nx">render</span> <span class="nf">(t) -&gt;</span> <span class="nx">t</span><span class="p">.</span><span class="nx">div</span> <span class="s2">&quot;foo&quot;</span>
+
+
+  <span class="s2">&quot;text should be escaped by default&quot;</span><span class="o">:</span> <span class="o">-&gt;</span>
+    <span class="nx">assert</span><span class="p">.</span><span class="nx">equal</span> <span class="s2">&quot;&lt;a&gt;1 &amp;lt; 2&lt;/a&gt;&quot;</span><span class="p">,</span> <span class="nx">Funcd</span><span class="p">.</span><span class="nx">render</span> <span class="nf">(t) -&gt;</span> <span class="nx">t</span><span class="p">.</span><span class="nx">a</span> <span class="s2">&quot;1 &lt; 2&quot;</span>
+
+
+  <span class="s2">&quot;should allow text nodes&quot;</span><span class="o">:</span> <span class="o">-&gt;</span>
+    <span class="nx">assert</span><span class="p">.</span><span class="nx">equal</span> <span class="s1">&#39;&lt;p&gt;foo&lt;em&gt;bar&lt;/em&gt;&lt;/p&gt;&#39;</span><span class="p">,</span> <span class="nx">Funcd</span><span class="p">.</span><span class="nx">render</span> <span class="nf">(t) -&gt;</span>
+      <span class="nx">t</span><span class="p">.</span><span class="nx">p</span> <span class="o">-&gt;</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nx">text</span> <span class="s2">&quot;foo&quot;</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nx">em</span> <span class="s2">&quot;bar&quot;</span>
+
+  <span class="s2">&quot;raw text should require some effort&quot;</span><span class="o">:</span> <span class="o">-&gt;</span>
+    <span class="nx">assert</span><span class="p">.</span><span class="nx">equal</span> <span class="s2">&quot;&lt;a&gt;&lt;i&gt;apple&lt;/i&gt;&lt;/a&gt;&quot;</span><span class="p">,</span> <span class="nx">Funcd</span><span class="p">.</span><span class="nx">render</span> <span class="nf">(t) -&gt;</span> <span class="nx">t</span><span class="p">.</span><span class="nx">a</span> <span class="nx">t</span><span class="p">.</span><span class="nx">raw</span><span class="p">(</span><span class="s2">&quot;&lt;i&gt;apple&lt;/i&gt;&quot;</span><span class="p">)</span>
+
+
+  <span class="s2">&quot;should allow nesting&quot;</span><span class="o">:</span> <span class="o">-&gt;</span>
+    <span class="nx">assert</span><span class="p">.</span><span class="nx">equal</span> <span class="s2">&quot;&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;&lt;/body&gt;&lt;/html&gt;&quot;</span><span class="p">,</span> <span class="nx">Funcd</span><span class="p">.</span><span class="nx">render</span> <span class="nf">(t) -&gt;</span>
+      <span class="nx">t</span><span class="p">.</span><span class="nx">html</span> <span class="o">-&gt;</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nx">head</span> <span class="o">-&gt;</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nx">body</span> <span class="o">-&gt;</span>
+
+
+  <span class="s2">&quot;should have doctype&quot;</span><span class="o">:</span> <span class="o">-&gt;</span>
+    <span class="nx">assert</span><span class="p">.</span><span class="nx">equal</span> <span class="s2">&quot;&lt;!DOCTYPE html&gt;&quot;</span><span class="p">,</span> <span class="nx">Funcd</span><span class="p">.</span><span class="nx">render</span> <span class="nf">(t) -&gt;</span> <span class="nx">t</span><span class="p">.</span><span class="nx">doctype</span> <span class="mi">5</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-2'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-2">&#182;</a>
+        </div>
+        <p>&ldquo;should allow layouts via a pipeline&rdquo;: &ndash;&gt;
+  layout = &ndash;&gt;
+    t.html &ndash;&gt;
+      t.head &ndash;&gt;
+        t.block &lsquo;styles&rsquo;, &lsquo;foo&rsquo;
+        t.block &lsquo;scripts&rsquo;</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-3'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-3">&#182;</a>
+        </div>
+        <p>page = &ndash;&gt;
+  t.block &lsquo;scripts&rsquo;, &ndash;&gt;
+    t.script &ldquo;var one;&rdquo;</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-4'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-4">&#182;</a>
+        </div>
+        <p>assert.equal &ldquo;<html><head>foo<script type=\"text/javascript\">var one;</script></head></html>&ldquo;, Funcd.render [layout, page]</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="s2">&quot;should allow layouts via extends&quot;</span><span class="o">:</span> <span class="o">-&gt;</span>
+    <span class="nv">layout = </span><span class="nf">(t) -&gt;</span>
+      <span class="nx">t</span><span class="p">.</span><span class="nx">html</span> <span class="o">-&gt;</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nx">head</span> <span class="o">-&gt;</span>
+          <span class="nx">t</span><span class="p">.</span><span class="nx">block</span> <span class="s1">&#39;styles&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span>
+          <span class="nx">t</span><span class="p">.</span><span class="nx">block</span> <span class="s1">&#39;scripts&#39;</span>
+
+    <span class="nv">page = </span><span class="nf">(t) -&gt;</span>
+      <span class="nx">t</span><span class="p">.</span><span class="k">extends</span> <span class="nx">layout</span>
+      <span class="nx">t</span><span class="p">.</span><span class="nx">block</span> <span class="s1">&#39;scripts&#39;</span><span class="p">,</span> <span class="o">-&gt;</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nx">script</span> <span class="s2">&quot;var one;&quot;</span>
+
+    <span class="nx">assert</span><span class="p">.</span><span class="nx">equal</span> <span class="s2">&quot;&lt;html&gt;&lt;head&gt;foo&lt;script type=\&quot;text/javascript\&quot;&gt;var one;&lt;/script&gt;&lt;/head&gt;&lt;/html&gt;&quot;</span><span class="p">,</span> <span class="nx">Funcd</span><span class="p">.</span><span class="nx">render</span> <span class="nx">page</span>
+
+
+  <span class="s2">&quot;should allow layouts via variable&quot;</span><span class="o">:</span> <span class="o">-&gt;</span>
+    <span class="nv">layout = </span><span class="nf">(t) -&gt;</span>
+      <span class="nx">t</span><span class="p">.</span><span class="nx">html</span> <span class="o">-&gt;</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nx">head</span> <span class="o">-&gt;</span>
+          <span class="nx">t</span><span class="p">.</span><span class="nx">block</span> <span class="s1">&#39;styles&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span>
+          <span class="nx">t</span><span class="p">.</span><span class="nx">block</span> <span class="s1">&#39;scripts&#39;</span>
+
+    <span class="nv">page = </span><span class="nf">(t, lay) -&gt;</span>
+      <span class="nx">t</span><span class="p">.</span><span class="k">extends</span> <span class="nx">lay</span>
+      <span class="nx">t</span><span class="p">.</span><span class="nx">block</span> <span class="s1">&#39;scripts&#39;</span><span class="p">,</span> <span class="s1">&#39;bar&#39;</span>
+
+    <span class="nx">assert</span><span class="p">.</span><span class="nx">equal</span> <span class="s2">&quot;&lt;html&gt;&lt;head&gt;foobar&lt;/head&gt;&lt;/html&gt;&quot;</span><span class="p">,</span> <span class="nx">Funcd</span><span class="p">.</span><span class="nx">render</span> <span class="nx">page</span><span class="p">,</span> <span class="nx">layout</span>
+
+
+  <span class="s2">&quot;should allow partials&quot;</span><span class="o">:</span> <span class="o">-&gt;</span>
+    <span class="nv">partial = </span><span class="nf">(t, first, last) -&gt;</span>
+      <span class="nx">t</span><span class="p">.</span><span class="nx">p</span> <span class="nx">first</span> <span class="o">+</span> <span class="nx">last</span>
+
+    <span class="nv">template = </span><span class="nf">(t) -&gt;</span>
+      <span class="nx">t</span><span class="p">.</span><span class="nx">div</span> <span class="o">-&gt;</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nx">render</span> <span class="nx">partial</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span>
+
+    <span class="nx">assert</span><span class="p">.</span><span class="nx">equal</span> <span class="s2">&quot;&lt;div&gt;&lt;p&gt;foobar&lt;/p&gt;&lt;/div&gt;&quot;</span><span class="p">,</span> <span class="nx">Funcd</span><span class="p">.</span><span class="nx">render</span> <span class="nx">template</span>
+
+
+  <span class="s2">&quot;should accept locals&quot;</span><span class="o">:</span> <span class="o">-&gt;</span>
+    <span class="nv">para = </span><span class="nf">(t, name) -&gt;</span>
+      <span class="nx">t</span><span class="p">.</span><span class="nx">p</span> <span class="nx">name</span>
+    <span class="nx">assert</span><span class="p">.</span><span class="nx">equal</span> <span class="s2">&quot;&lt;p&gt;foo&lt;/p&gt;&quot;</span><span class="p">,</span> <span class="nx">Funcd</span><span class="p">.</span><span class="nx">render</span> <span class="nx">para</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span>
+
+
+  <span class="s2">&quot;should work with functions&quot;</span><span class="o">:</span> <span class="o">-&gt;</span>
+    <span class="nv">sum = </span><span class="nf">(a, b) -&gt;</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span>
+    <span class="nx">assert</span><span class="p">.</span><span class="nx">equal</span> <span class="s2">&quot;&lt;p&gt;42&lt;/p&gt;&quot;</span><span class="p">,</span> <span class="nx">Funcd</span><span class="p">.</span><span class="nx">render</span> <span class="nf">(t) -&gt;</span>
+      <span class="nx">t</span><span class="p">.</span><span class="nx">p</span> <span class="nx">sum</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+
+  <span class="s2">&quot;should work with bound functions&quot;</span><span class="o">:</span> <span class="o">-&gt;</span>
+    <span class="k">class</span> <span class="nx">Foo</span>
+      <span class="nv">foo: </span><span class="s1">&#39;bar&#39;</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-5'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-5">&#182;</a>
+        </div>
+        <p>notice fat arrow</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="nv">bah: </span><span class="p">(</span><span class="nx">t</span><span class="p">)</span> <span class="o">=&gt;</span>
+        <span class="nx">@foo</span> <span class="o">+</span> <span class="s1">&#39;baz&#39;</span>
+    <span class="nv">foo = </span><span class="k">new</span> <span class="nx">Foo</span>
+    <span class="nv">template = </span><span class="nf">(t) -&gt;</span>
+      <span class="nx">t</span><span class="p">.</span><span class="nx">p</span> <span class="nx">foo</span><span class="p">.</span><span class="nx">bah</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span>
+    <span class="nx">assert</span><span class="p">.</span><span class="nx">equal</span> <span class="s2">&quot;&lt;p&gt;barbaz&lt;/p&gt;&quot;</span><span class="p">,</span> <span class="nx">Funcd</span><span class="p">.</span><span class="nx">render</span> <span class="nx">template</span>
+
+
+  <span class="s2">&quot;should create default attributes&quot;</span><span class="o">:</span> <span class="o">-&gt;</span>
+    <span class="nx">assert</span><span class="p">.</span><span class="nx">equal</span> <span class="s1">&#39;&lt;script type=&quot;text/javascript&quot;&gt;var foo;&lt;/script&gt;&#39;</span><span class="p">,</span> <span class="nx">Funcd</span><span class="p">.</span><span class="nx">render</span> <span class="nf">(t) -&gt;</span> <span class="nx">t</span><span class="p">.</span><span class="nx">script</span> <span class="s2">&quot;var foo;&quot;</span>
+
+
+  <span class="s2">&quot;should handle short tags&quot;</span><span class="o">:</span> <span class="o">-&gt;</span>
+    <span class="nx">assert</span><span class="p">.</span><span class="nx">equal</span> <span class="s2">&quot;&lt;br/&gt;&lt;img src=\&quot;image.png\&quot;/&gt;&quot;</span><span class="p">,</span> <span class="nx">Funcd</span><span class="p">.</span><span class="nx">render</span> <span class="nf">(t) -&gt;</span>
+      <span class="nx">t</span><span class="p">.</span><span class="nx">br</span><span class="p">()</span>
+      <span class="nx">t</span><span class="p">.</span><span class="nx">img</span> <span class="nv">src: </span><span class="s2">&quot;image.png&quot;</span>
+
+
+  <span class="s2">&quot;longer example&quot;</span><span class="o">:</span> <span class="o">-&gt;</span>
+    <span class="nv">layout = </span><span class="nf">(t) -&gt;</span>
+      <span class="nx">t</span><span class="p">.</span><span class="nx">doctype</span> <span class="mi">5</span>
+      <span class="nx">t</span><span class="p">.</span><span class="nx">html</span> <span class="o">-&gt;</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nx">head</span> <span class="o">-&gt;</span>
+          <span class="nx">t</span><span class="p">.</span><span class="nx">script</span> <span class="nv">src: </span><span class="s2">&quot;https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js&quot;</span>
+          <span class="nx">t</span><span class="p">.</span><span class="nx">block</span> <span class="s2">&quot;page-scripts&quot;</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nx">body</span> <span class="o">-&gt;</span>
+          <span class="nx">t</span><span class="p">.</span><span class="nx">block</span> <span class="s2">&quot;body&quot;</span>
+
+    <span class="nv">footer = </span><span class="nf">(t, text) -&gt;</span>
+      <span class="nx">t</span><span class="p">.</span><span class="nx">div</span> <span class="nv">id: </span><span class="s2">&quot;footer&quot;</span><span class="p">,</span> <span class="nx">text</span>
+
+    <span class="nv">page = </span><span class="nf">(t, name) -&gt;</span>
+      <span class="nx">t</span><span class="p">.</span><span class="k">extends</span> <span class="nx">layout</span>
+
+      <span class="nx">t</span><span class="p">.</span><span class="nx">block</span> <span class="s2">&quot;body&quot;</span><span class="p">,</span> <span class="o">-&gt;</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nx">h1</span> <span class="s2">&quot;Simple Page&quot;</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nx">div</span> <span class="s2">&quot;Hello #{name}&quot;</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nx">render</span> <span class="nx">footer</span><span class="p">,</span> <span class="s2">&quot;page1&quot;</span>
+
+    <span class="nv">html = </span><span class="nx">Funcd</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nv">pretty: </span><span class="kc">true</span><span class="p">,</span> <span class="nx">page</span><span class="p">,</span> <span class="s2">&quot;kitty!&quot;</span><span class="p">)</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-6'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-6">&#182;</a>
+        </div>
+        <p>console.log html</p>
+
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="s2">&quot;should be able to mixin instance block functions&quot;</span><span class="o">:</span> <span class="o">-&gt;</span>
+    <span class="nv">mixins =</span>
+      <span class="nv">reddiv: </span><span class="nf">(t, name, block) -&gt;</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nx">div</span> <span class="k">class</span><span class="o">:</span> <span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="o">-&gt;</span>
+          <span class="nx">t</span><span class="p">.</span><span class="nx">text</span> <span class="nx">name</span>
+          <span class="nx">t</span><span class="p">.</span><span class="nx">render</span> <span class="nx">block</span>
+
+      <span class="nv">bluediv: </span><span class="nf">(t, block) -&gt;</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nx">div</span> <span class="k">class</span><span class="o">:</span> <span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="nx">block</span>
+
+    <span class="nv">template = </span><span class="nf">(t) -&gt;</span>
+      <span class="nx">t</span><span class="p">.</span><span class="nx">reddiv</span> <span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span>
+      <span class="nx">t</span><span class="p">.</span><span class="nx">bluediv</span> <span class="o">-&gt;</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nx">p</span> <span class="s2">&quot;bah&quot;</span>
+
+    <span class="nx">assert</span><span class="p">.</span><span class="nx">equal</span> <span class="s2">&quot;&lt;div class=\&quot;red\&quot;&gt;foobar&lt;/div&gt;&lt;div class=\&quot;blue\&quot;&gt;&lt;p&gt;bah&lt;/p&gt;&lt;/div&gt;&quot;</span><span class="p">,</span> <span class="nx">Funcd</span><span class="p">.</span><span class="nx">render</span> <span class="nv">mixins: </span><span class="nx">mixins</span><span class="p">,</span> <span class="nx">template</span>
+
+
+  <span class="s2">&quot;should be able to mixin prototype block functions&quot;</span><span class="o">:</span> <span class="o">-&gt;</span>
+    <span class="nv">mixins =</span>
+      <span class="nv">reddiv: </span><span class="nf">(t, attrs, name, block) -&gt;</span>
+        <span class="nv">attrs.class = </span><span class="s1">&#39;red&#39;</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nx">div</span> <span class="nx">attrs</span><span class="p">,</span> <span class="o">-&gt;</span>
+          <span class="nx">t</span><span class="p">.</span><span class="nx">text</span> <span class="nx">name</span>
+          <span class="nx">t</span><span class="p">.</span><span class="nx">render</span> <span class="nx">block</span>
+
+      <span class="nv">bluediv: </span><span class="nf">(t, block) -&gt;</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nx">div</span> <span class="k">class</span><span class="o">:</span> <span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="nx">block</span>
+
+    <span class="nx">Funcd</span><span class="p">.</span><span class="nx">mixin</span> <span class="nx">mixins</span>
+
+    <span class="nv">template = </span><span class="nf">(t) -&gt;</span>
+      <span class="nx">t</span><span class="p">.</span><span class="nx">reddiv</span> <span class="nv">id: </span><span class="s2">&quot;item&quot;</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span>
+      <span class="nx">t</span><span class="p">.</span><span class="nx">bluediv</span> <span class="o">-&gt;</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nx">p</span> <span class="s2">&quot;bah&quot;</span>
+
+    <span class="nx">assert</span><span class="p">.</span><span class="nx">equal</span> <span class="s2">&quot;&lt;div id=\&quot;item\&quot; class=\&quot;red\&quot;&gt;foobar&lt;/div&gt;&lt;div class=\&quot;blue\&quot;&gt;&lt;p&gt;bah&lt;/p&gt;&lt;/div&gt;&quot;</span><span class="p">,</span> <span class="nx">Funcd</span><span class="p">.</span><span class="nx">render</span> <span class="nx">template</span></pre></div>
+      </td>
+    </tr>
+  </table>
+</div>
+</body>

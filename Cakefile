@@ -1,8 +1,17 @@
 task "build", "Builds the project", ->
   run "coffee --lint -c -b -o . src/"
+  writeHtml "src/test/index.funcd", "test/index.html"
 
 task "test", "runs tests", ->
   run "mocha -u exports src/test/funcdTest.coffee"
+
+
+writeHtml = (file, out) ->
+  # lazily require because funcd may not compile cleanly while developing
+  funcd = require(".")
+  fs = require("fs")
+  content = funcd.render(file)
+  fs.writeFileSync out, content
 
 
 cp = require("child_process")

@@ -7,6 +7,11 @@
 
 _ = require('underscore') if global?
 
+idSequence = 0
+nextId = ->
+  idSequence += 1
+  "funcd-async-" + idSequence
+
 
 doctypes =
   'default': '<!DOCTYPE html>'
@@ -42,6 +47,8 @@ elements =
 defaultAttributes =
   script:
     type: "text/javascript"
+
+rawContentElements = ['script']
 
 
 mergeElements = (args...) ->
@@ -88,29 +95,55 @@ attributeList = (tag, obj={}) ->
     list += " #{name}=\"#{escapeHtml(val)}\""
   list
 
-# Detects the path of the calling function.
-detectCallerPath = (referencePath, err) ->
-  for match, i in err.stack.match(/\(([^:]+).*\)$/mg) 
-    path = match.match(/\(([^:]+)/)[1] 
-    if path != referencePath
-      return path
-  null  
 
-templateFunction = (file) ->
-  #console.dir module
-  callerPath = detectCallerPath(__filename, new Error)
-  cs = require("coffee-script")
-  path = require("path")
-  if file.indexOf('.') == 0
-    file = path.join(path.dirname(callerPath), file)
-  file += ".funcd" unless file.match(/\.funcd$/)
-  content = require("fs").readFileSync(file, 'utf8')
-  sandbox = 
-    global: {}
-    module:
-      exports: {}
-  cs.eval content, sandbox:sandbox
-  template = sandbox.module.exports
+mixinTag = (tag) ->
+  Funcd::[tag] = (attributes, inner) ->
+    options = tag: tag, parseBody: tag != 'textarea', parseAttributes: true
+    @_outerHtml options, attributes, inner
+
+
+mixinShortTag = (tag) ->
+  Funcd::[tag] = (attributes) ->
+    attrList = ""
+    if _.isObject(attributes)
+      attrList = attributeList(tag, attributes)
+    @buffer += @lead + "<#{tag}#{attrList}/>" + @eol
+
+
+# Not meant to be run in browser
+if global?
+  # Detects the path of the calling function.
+  #
+  # Example
+  #   path = detectCallerPath(__filename, new Error)
+  #
+  # @param {String} referencePath Pass `__filename` as this argument.
+  # @param {Error} err Pass `new Error` as this argument.
+  detectCallerPath = (referencePath, err) ->
+    for match, i in err.stack.match(/\(([^:]+).*\)$/mg) 
+      path = match.match(/\(([^:]+)/)[1] 
+      if path != referencePath
+        return path
+    null  
+
+  templateFunction = (file) ->
+    cs = require("coffee-script")
+    path = require("path")
+
+    # compute absolute paths relative to caller not this file
+    if file.indexOf('/') != 0
+      callerPath = detectCallerPath(__filename, new Error)
+      file = path.join(path.dirname(callerPath), file)
+
+    file += ".funcd" unless file.match(/\.funcd$/)
+    content = require("fs").readFileSync(file, 'utf8')
+    sandbox = 
+      global: {}
+      module:
+        exports: {}
+    cs.eval content, sandbox:sandbox
+    template = sandbox.module.exports
+
 
 class Funcd
   constructor: (opts = {}) ->
@@ -130,10 +163,15 @@ class Funcd
     @blocks = {}
     @eol = if @pretty then '\n' else ''
     @buffers = []
+    @asyncCallbacks = []
 
     @buffer = ""
 
 
+  applyAsyncCallbacks: ($parent) ->
+    return unless @asyncCallbacks
+    for pair in @asyncCallbacks
+      pair.lambda jQuery('#'+pair.id), $parent
 
   block: (name, attributes, inner) ->
     @buffers.push @buffer
@@ -150,9 +188,9 @@ class Funcd
     # mark the block in the string for replacment later
     @buffer += @lead + "___#{name}___" + @eol unless exists?
 
+
   doctype: (s) ->
     @buffer += doctypes[s.toString()] + @eol
-
 
 
   # Extend a layout template.
@@ -186,7 +224,7 @@ class Funcd
   #
   # @param {object} options The otpions to pass to Funcd.
   # @param {Function} template
-  @render: (options, template, args...) ->
+  @renderBuilder: (options, template, args...) ->
     args = Array.prototype.slice.call(arguments)
     first = args[0]
 
@@ -206,7 +244,13 @@ class Funcd
 
     builder = new Funcd(options)
     template.apply builder, [builder].concat(args)
+    builder
+
+
+  @render: (args...) ->
+    builder = @renderBuilder args...
     builder.toHtml()
+
 
   # text element
   text: (s) ->
@@ -219,13 +263,9 @@ class Funcd
     @buffer
 
 
-
-
   #////////////// Protected methods
   _outerHtml: (options, attrs, inner) ->
     {tag, parseAttributes, parseBody} = options
-
-
     attributes = ""
     innerText = ""
     innerHtmlFn = null
@@ -233,7 +273,10 @@ class Funcd
     for arg in [attrs, inner]
       switch typeof arg
         when 'string'
-          innerText += escapeHtml(arg)
+          if rawContentElements.indexOf(tag) < 0
+            innerText += escapeHtml(arg)
+          else
+            innerText += arg
         when 'number'
           innerText += escapeHtml(arg.toString())
         when 'function'
@@ -243,6 +286,12 @@ class Funcd
             innerText = arg.__raw
           else
             if parseAttributes
+              if arg["data-funcd-async"]
+                asyncfn = arg["data-funcd-async"]
+                delete arg["data-funcd-async"]
+                unless arg.id
+                  arg.id = nextId()
+                @asyncCallbacks.push lambda:asyncfn, id:arg.id
               attributes += attributeList(tag, arg)
             else if arg
               innerText += arg.toString()
@@ -259,12 +308,11 @@ class Funcd
       @lead = @lead[0...-2] if @pretty
     @buffer += @lead + "</#{tag}>#{@eol}" if tag
 
-  _safeString: (s) ->
-    if s.__raw then s.__raw else s
 
 if global?
   cs = require("coffee-script")
   Funcd::coffeescript = (options, inner) ->
+    self = @
     if arguments.length == 1
       inner = options
       options = null
@@ -276,20 +324,14 @@ if global?
     js = cs.compile(code, options)
     @script type:"text/javascript", js
 
-
-mixinTag = (tag) ->
-  Funcd::[tag] = (attributes, inner) ->
-    options = tag: tag, parseBody: tag != 'textarea', parseAttributes: true
-    @_outerHtml options, attributes, inner
-
-
-mixinShortTag = (tag) ->
-  Funcd::[tag] = (attributes) ->
-    attrList = ""
-    if _.isObject(attributes)
-      attrList = attributeList(tag, attributes)
-    @buffer += @lead + "<#{tag}#{attrList}/>" + @eol
-
+#//// JQUERY (must be installed)
+else
+  jQuery.fn.funcd = (template, args) ->
+    @each ->
+      $obj = jQuery(this)
+      builder = Funcd.renderBuilder(template)
+      $obj.html builder.toHtml()
+      builder.applyAsyncCallbacks $obj
 
 # Code to run
 do ->
@@ -299,7 +341,7 @@ do ->
   for tag in mergeElements(elements.short, elements.obsoleteShort)
     mixinShortTag tag
 
-  if module && module.exports
+  if global?
     module.exports = Funcd
   else
     window.Funcd = Funcd

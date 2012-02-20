@@ -67,7 +67,10 @@ module.exports =
 
 
   "should render from file": ->
-    assert.equal "<body></body>", Funcd.render "./layout"
+    assert.equal "<body></body>", Funcd.render "layout"
+
+  "should render from file with variables": ->
+    assert.equal "<p>foo San Diego</p>", Funcd.render("./variables", "foo", "San Diego")
 
   "should extend from file": ->
     template = (t) ->
@@ -119,6 +122,9 @@ module.exports =
   "should create default attributes": ->
     assert.equal '<script type="text/javascript">var foo;</script>', Funcd.render (t) -> t.script "var foo;"
 
+  "should not escape script": ->
+    html = Funcd.render (t) -> t.script "a < b"
+    assert.ok html.indexOf("a < b") > 0
 
   "should handle short tags": ->
     assert.equal "<br/><img src=\"image.png\"/>", Funcd.render (t) ->
@@ -204,6 +210,7 @@ module.exports =
         t.p "bah"
 
     assert.equal "<div id=\"item\" class=\"red\">foobar</div><div class=\"blue\"><p>bah</p></div>", Funcd.render template
+
 
 
   "should convert coffeescript to javascript (server-side only)": ->

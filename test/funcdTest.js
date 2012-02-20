@@ -84,7 +84,10 @@ module.exports = {
     return assert.equal("<html><head>foobar</head></html>", Funcd.render(page, layout));
   },
   "should render from file": function() {
-    return assert.equal("<body></body>", Funcd.render("./layout"));
+    return assert.equal("<body></body>", Funcd.render("layout"));
+  },
+  "should render from file with variables": function() {
+    return assert.equal("<p>foo San Diego</p>", Funcd.render("./variables", "foo", "San Diego"));
   },
   "should extend from file": function() {
     var template;
@@ -156,6 +159,13 @@ module.exports = {
     return assert.equal('<script type="text/javascript">var foo;</script>', Funcd.render(function(t) {
       return t.script("var foo;");
     }));
+  },
+  "should not escape script": function() {
+    var html;
+    html = Funcd.render(function(t) {
+      return t.script("a < b");
+    });
+    return assert.ok(html.indexOf("a < b") > 0);
   },
   "should handle short tags": function() {
     return assert.equal("<br/><img src=\"image.png\"/>", Funcd.render(function(t) {

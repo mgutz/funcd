@@ -8,6 +8,7 @@ Template engine in the style of Builder, Markaby, Erector.
 * Just functions
 * Partials
 * Safe HTML
+* jQuery asynchronous element updates
 
 ## Installation
 
@@ -65,6 +66,38 @@ Safe HTML
 
     # <a><i>apple</i></a>
     Funcd.render (t) -> t.a t.raw("<i>apple</i>")
+
+
+Render from files
+
+    # test.funcd
+    module.exports = (t, name, city) ->
+      t.div name + " " + city
+
+    # <div>foo San Diego</div>
+    Funcd.render "./test", "foo", "San Diego" 
+
+
+jQuery Asynchronous updates
+
+    module.exports = (t) ->
+      t.html ->
+        t.body ->
+          t.div id:"content"
+
+          t.coffeescript """
+            update = ($el) ->
+              setTimeout (-> 
+                $el.funcd (t) -> t.div "bar baby!"
+              ), 2000
+
+            template = (t) ->
+              t.div style:"background-color:#999; color:#000", "inserted via template"
+              t.div "data-funcd-async":update, "this will change in 2 seconds"
+
+            $ ->
+              $('#content').funcd template
+          """
 
 
 OOP if you prefer

@@ -5,7 +5,8 @@
 # MIT Licensed
 #==============================================================================
 
-_ = require('underscore')
+_ = require('underscore') if global?
+
 
 doctypes =
   'default': '<!DOCTYPE html>'
@@ -185,6 +186,8 @@ class Funcd
     @buffer
 
 
+
+
   #////////////// Protected methods
   _outerHtml: (options, attrs, inner) ->
     {tag, parseAttributes, parseBody} = options
@@ -226,6 +229,19 @@ class Funcd
   _safeString: (s) ->
     if s.__raw then s.__raw else s
 
+if global?
+  cs = require("coffee-script")
+  Funcd::coffeescript = (options, inner) ->
+    if arguments.length == 1
+      inner = options
+      options = null
+
+    code = inner
+    if typeof code == "function"
+      code = inner()
+
+    js = cs.compile(code, options)
+    @script type:"text/javascript", js
 
 mixinTag = (tag) ->
   Funcd::[tag] = (attributes, inner) ->
@@ -238,6 +254,10 @@ mixinShortTag = (tag) ->
     if _.isObject(attributes)
       attrList = attributeList(tag, attributes)
     @buffer += @lead + "<#{tag}#{attrList}/>" + @eol
+
+
+
+
 
 
 # Code to run

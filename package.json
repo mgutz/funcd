@@ -11,6 +11,7 @@
     "node": "~0.6"
   },
   "dependencies": {
+    "underscore": ""
   },
   "devDependencies": {
     "coffee-script": "",

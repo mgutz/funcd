@@ -172,7 +172,6 @@ module.exports =
     assert.equal "<html><head></head><body><p>foo</p></body></html>", page.template()
 
 
-
   "should be able to mixin prototype block functions": ->
     mixins =
       reddiv: (t, attrs, name, block) ->
@@ -193,3 +192,22 @@ module.exports =
 
     assert.equal "<div id=\"item\" class=\"red\">foobar</div><div class=\"blue\"><p>bah</p></div>", Funcd.render template
 
+
+  "should convert coffeescript to javascript (server-side only)": ->
+    template = (t) ->
+      t.coffeescript "a = 0"
+
+    s = Funcd.render(template)
+    assert.ok s.indexOf('<script type="text/javascript">') == 0
+    assert.ok s.indexOf('var a;') > 0
+    assert.ok s.indexOf('a = 0') > 0
+
+  "should use coffeescript options": ->
+    template = (t) ->
+      t.coffeescript bare:true, "a = 0"
+
+    s = Funcd.render(template)
+    assert.ok s.indexOf('function') < 0
+    assert.ok s.indexOf('<script type="text/javascript">') == 0
+    assert.ok s.indexOf('var a;') > 0
+    assert.ok s.indexOf('a = 0') > 0

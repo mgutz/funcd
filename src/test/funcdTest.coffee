@@ -69,16 +69,22 @@ module.exports =
   "should render from file": ->
     assert.equal "<body></body>", Funcd.render "#{__dirname}/layout"
 
+
   "should render from file with variables": ->
     assert.equal "<p>foo San Diego</p>", Funcd.render("#{__dirname}/variables", "foo", "San Diego")
+
 
   "should extend from file": ->
     template = (t) ->
       t.extends "#{__dirname}/layout"
       t.block "content", ->
         t.p "foo"
-
     assert.equal "<body><p>foo</p></body>", Funcd.render template
+
+
+  "should render from file by compile": ->
+    template = Funcd.compile("#{__dirname}/layout")
+    assert.equal "<body></body>", template()
 
 
   "should allow partials": ->
@@ -122,15 +128,16 @@ module.exports =
   "should create default attributes": ->
     assert.equal '<script type="text/javascript">var foo;</script>', Funcd.render (t) -> t.script "var foo;"
 
+
   "should not escape script": ->
     html = Funcd.render (t) -> t.script "a < b"
     assert.ok html.indexOf("a < b") > 0
+
 
   "should handle short tags": ->
     assert.equal "<br/><img src=\"image.png\"/>", Funcd.render (t) ->
       t.br()
       t.img src: "image.png"
-
 
   "longer example": ->
     layout = (t) ->
@@ -147,7 +154,6 @@ module.exports =
 
     page = (t, name) ->
       t.extends layout
-
       t.block "body", ->
         t.h1 "Simple Page"
         t.div "Hello #{name}"

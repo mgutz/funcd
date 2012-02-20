@@ -1,5 +1,5 @@
 task "build", "Builds the project", ->
-  run "coffee --lint -c -b -o . src/"
+  run "coffee --lint -c -o . src/"
   
 task "html", "", ->
   writeHtml "src/test/index.funcd", "test/index.html"

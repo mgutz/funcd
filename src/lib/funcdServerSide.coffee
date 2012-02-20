@@ -21,11 +21,9 @@ Funcd::coffeescript = (options, inner) ->
   @script type:"text/javascript", jscode
 
 
-
 Funcd.renderToFile = (sourceFilename, outFilename) ->
   content = Funcd.render(sourceFilename)
   fs.writeFileSync outFilename, content
-
 
 
 # Detects the path of the calling function.

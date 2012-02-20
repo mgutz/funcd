@@ -1,2 +1,5 @@
+(function() {
 
-module.exports = require('./lib/index');
+  module.exports = require('./lib/index');
+
+}).call(this);

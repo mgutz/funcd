@@ -16,7 +16,7 @@ module.exports = (t) ->
 
         template = (t) ->
           t.div style:"background-color:#999; color:#000", "inserted via template"
-          t.div "data-funcd-async":update, "this will change in 2 seconds"
+          t.div "data-funcd-async":update, "change in a bit"
 
         $ ->
           $('#content').funcd template

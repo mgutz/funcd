@@ -7,6 +7,9 @@
 
 if global?
   _ = require('underscore')
+else
+  _ = window._
+
 
 idSequence = 0
 nextId = ->
@@ -228,6 +231,10 @@ class Funcd
     for k, innerHtml of @blocks
       @buffer = @buffer.replace(///___#{k}___///g, innerHtml)
     @buffer
+
+  @compile: (filenameOrObject) ->
+    (args...) ->
+      Funcd.render filenameOrObject, args...
 
 
   #////////////// Protected methods

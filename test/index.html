@@ -1,0 +1,26 @@
+<html><head></head><body><div id="content"></div><script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script><script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.1/underscore-min.js"></script><script type="text/javascript" src="../lib/funcd.js"></script><script type="text/javascript">(function() {
+  var template, update;
+
+  update = function($el) {
+    return setTimeout((function() {
+      return $el.funcd(function(t) {
+        return t.div("bar baby!");
+      });
+    }), 2000);
+  };
+
+  template = function(t) {
+    t.div({
+      style: "background-color:#999; color:#000"
+    }, "inserted via template");
+    return t.div({
+      "data-funcd-async": update
+    }, "this will change in 2 seconds");
+  };
+
+  $(function() {
+    return $('#content').funcd(template);
+  });
+
+}).call(this);
+</script></body></html>

@@ -88,6 +88,29 @@ attributeList = (tag, obj={}) ->
     list += " #{name}=\"#{escapeHtml(val)}\""
   list
 
+# Detects the path of the calling function.
+detectCallerPath = (referencePath, err) ->
+  for match, i in err.stack.match(/\(([^:]+).*\)$/mg) 
+    path = match.match(/\(([^:]+)/)[1] 
+    if path != referencePath
+      return path
+  null  
+
+templateFunction = (file) ->
+  #console.dir module
+  callerPath = detectCallerPath(__filename, new Error)
+  cs = require("coffee-script")
+  path = require("path")
+  if file.indexOf('.') == 0
+    file = path.join(path.dirname(callerPath), file)
+  file += ".funcd" unless file.match(/\.funcd$/)
+  content = require("fs").readFileSync(file, 'utf8')
+  sandbox = 
+    global: {}
+    module:
+      exports: {}
+  cs.eval content, sandbox:sandbox
+  template = sandbox.module.exports
 
 class Funcd
   constructor: (opts = {}) ->
@@ -130,12 +153,14 @@ class Funcd
   doctype: (s) ->
     @buffer += doctypes[s.toString()] + @eol
 
+
+
   # Extend a layout template.
   #
   # @param {String|Object} template Path or object.
   extends: (template) ->
     if global? and typeof template is "string"
-      template = require(template)
+      template = templateFunction(template)
     template @
 
   @mixin = (mixins) ->
@@ -163,18 +188,21 @@ class Funcd
   # @param {Function} template
   @render: (options, template, args...) ->
     args = Array.prototype.slice.call(arguments)
-    type = typeof args[0]
+    first = args[0]
 
-    if type == 'function'
+    if _.isFunction(first)
       template = args[0]
       options = {}
       args = args.slice(1)
-    else if type  == 'object'
+    else if _.isString(first)
+      template = templateFunction(args[0])
+      options = {}
+      args = args.slice(1)
+    else if _.isObject(first)
       options = args[0]
       template = args[1]
       args = args.slice(2)
-    else
-      console.log "HUH"
+
 
     builder = new Funcd(options)
     template.apply builder, [builder].concat(args)

@@ -58,6 +58,7 @@ module.exports =
           t.block 'styles', 'foo'
           t.block 'scripts'
 
+
     page = (t, lay) ->
       t.extends lay
       t.block 'scripts', 'bar'
@@ -65,9 +66,12 @@ module.exports =
     assert.equal "<html><head>foobar</head></html>", Funcd.render page, layout
 
 
+  "should render from file": ->
+    assert.equal "<body></body>", Funcd.render "./layout"
+
   "should extend from file": ->
     template = (t) ->
-      t.extends "#{__dirname}/layout.funcd"
+      t.extends "./layout"
       t.block "content", ->
         t.p "foo"
 

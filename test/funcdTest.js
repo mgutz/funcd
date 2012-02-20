@@ -83,6 +83,19 @@ module.exports = {
     };
     return assert.equal("<html><head>foobar</head></html>", Funcd.render(page, layout));
   },
+  "should render from file": function() {
+    return assert.equal("<body></body>", Funcd.render("./layout"));
+  },
+  "should extend from file": function() {
+    var template;
+    template = function(t) {
+      t["extends"]("./layout");
+      return t.block("content", function() {
+        return t.p("foo");
+      });
+    };
+    return assert.equal("<body><p>foo</p></body>", Funcd.render(template));
+  },
   "should allow partials": function() {
     var partial, template;
     partial = function(t, first, last) {
@@ -278,5 +291,28 @@ module.exports = {
       });
     };
     return assert.equal("<div id=\"item\" class=\"red\">foobar</div><div class=\"blue\"><p>bah</p></div>", Funcd.render(template));
+  },
+  "should convert coffeescript to javascript (server-side only)": function() {
+    var s, template;
+    template = function(t) {
+      return t.coffeescript("a = 0");
+    };
+    s = Funcd.render(template);
+    assert.ok(s.indexOf('<script type="text/javascript">') === 0);
+    assert.ok(s.indexOf('var a;') > 0);
+    return assert.ok(s.indexOf('a = 0') > 0);
+  },
+  "should use coffeescript options": function() {
+    var s, template;
+    template = function(t) {
+      return t.coffeescript({
+        bare: true
+      }, "a = 0");
+    };
+    s = Funcd.render(template);
+    assert.ok(s.indexOf('function') < 0);
+    assert.ok(s.indexOf('<script type="text/javascript">') === 0);
+    assert.ok(s.indexOf('var a;') > 0);
+    return assert.ok(s.indexOf('a = 0') > 0);
   }
 };

@@ -1,4 +1,5 @@
 module.exports = (t) ->
+  t.doctype 5
   t.html ->
     t.head ->
     t.body ->

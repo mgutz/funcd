@@ -5,7 +5,8 @@
 # MIT Licensed
 #==============================================================================
 
-_ = require('underscore') if global?
+if global?
+  _ = require('underscore')
 
 idSequence = 0
 nextId = ->
@@ -110,40 +111,6 @@ mixinShortTag = (tag) ->
     @buffer += @lead + "<#{tag}#{attrList}/>" + @eol
 
 
-# Not meant to be run in browser
-if global?
-  # Detects the path of the calling function.
-  #
-  # Example
-  #   path = detectCallerPath(__filename, new Error)
-  #
-  # @param {String} referencePath Pass `__filename` as this argument.
-  # @param {Error} err Pass `new Error` as this argument.
-  detectCallerPath = (referencePath, err) ->
-    for match, i in err.stack.match(/\(([^:]+).*\)$/mg) 
-      path = match.match(/\(([^:]+)/)[1] 
-      if path != referencePath
-        return path
-    null  
-
-  templateFunction = (file) ->
-    cs = require("coffee-script")
-    path = require("path")
-
-    # compute absolute paths relative to caller not this file
-    if file.indexOf('/') != 0
-      callerPath = detectCallerPath(__filename, new Error)
-      file = path.join(path.dirname(callerPath), file)
-
-    file += ".funcd" unless file.match(/\.funcd$/)
-    content = require("fs").readFileSync(file, 'utf8')
-    sandbox = 
-      global: {}
-      module:
-        exports: {}
-    cs.eval content, sandbox:sandbox
-    template = sandbox.module.exports
-
 
 class Funcd
   constructor: (opts = {}) ->
@@ -197,8 +164,8 @@ class Funcd
   #
   # @param {String|Object} template Path or object.
   extends: (template) ->
-    if global? and typeof template is "string"
-      template = templateFunction(template)
+    if typeof template is "string" and require?
+      template = require(template)
     template @
 
   @mixin = (mixins) ->
@@ -233,7 +200,7 @@ class Funcd
       options = {}
       args = args.slice(1)
     else if _.isString(first)
-      template = templateFunction(args[0])
+      template = require(args[0])
       options = {}
       args = args.slice(1)
     else if _.isObject(first)
@@ -309,23 +276,8 @@ class Funcd
     @buffer += @lead + "</#{tag}>#{@eol}" if tag
 
 
-if global?
-  cs = require("coffee-script")
-  Funcd::coffeescript = (options, inner) ->
-    self = @
-    if arguments.length == 1
-      inner = options
-      options = null
-
-    code = inner
-    if typeof code == "function"
-      code = inner()
-
-    js = cs.compile(code, options)
-    @script type:"text/javascript", js
-
 #//// JQUERY (must be installed)
-else
+if window?
   jQuery.fn.funcd = (template, args) ->
     @each ->
       $obj = jQuery(this)

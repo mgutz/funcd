@@ -84,15 +84,15 @@ module.exports = {
     return assert.equal("<html><head>foobar</head></html>", Funcd.render(page, layout));
   },
   "should render from file": function() {
-    return assert.equal("<body></body>", Funcd.render("layout"));
+    return assert.equal("<body></body>", Funcd.render("" + __dirname + "/layout"));
   },
   "should render from file with variables": function() {
-    return assert.equal("<p>foo San Diego</p>", Funcd.render("./variables", "foo", "San Diego"));
+    return assert.equal("<p>foo San Diego</p>", Funcd.render("" + __dirname + "/variables", "foo", "San Diego"));
   },
   "should extend from file": function() {
     var template;
     template = function(t) {
-      t["extends"]("./layout");
+      t["extends"]("" + __dirname + "/layout");
       return t.block("content", function() {
         return t.p("foo");
       });

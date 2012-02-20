@@ -1,5 +1,7 @@
 task "build", "Builds the project", ->
   run "coffee --lint -c -b -o . src/"
+  
+task "html", "", ->
   writeHtml "src/test/index.funcd", "test/index.html"
 
 task "test", "runs tests", ->
@@ -8,10 +10,8 @@ task "test", "runs tests", ->
 
 writeHtml = (file, out) ->
   # lazily require because funcd may not compile cleanly while developing
-  funcd = require(".")
-  fs = require("fs")
-  content = funcd.render(file)
-  fs.writeFileSync out, content
+  Funcd = require(".")
+  Funcd.renderToFile file, out
 
 
 cp = require("child_process")

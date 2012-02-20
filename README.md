@@ -75,7 +75,7 @@ Render from files
       t.div name + " " + city
 
     # <div>foo San Diego</div>
-    Funcd.render "./test", "foo", "San Diego" 
+    Funcd.render "#{__dirname}/test", "foo", "San Diego" 
 
 
 jQuery Asynchronous updates

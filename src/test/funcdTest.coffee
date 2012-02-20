@@ -67,14 +67,14 @@ module.exports =
 
 
   "should render from file": ->
-    assert.equal "<body></body>", Funcd.render "layout"
+    assert.equal "<body></body>", Funcd.render "#{__dirname}/layout"
 
   "should render from file with variables": ->
-    assert.equal "<p>foo San Diego</p>", Funcd.render("./variables", "foo", "San Diego")
+    assert.equal "<p>foo San Diego</p>", Funcd.render("#{__dirname}/variables", "foo", "San Diego")
 
   "should extend from file": ->
     template = (t) ->
-      t.extends "./layout"
+      t.extends "#{__dirname}/layout"
       t.block "content", ->
         t.p "foo"
 

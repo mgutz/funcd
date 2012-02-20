@@ -1,1 +1,1 @@
-module.exports = require('./lib/funcd')
+module.exports = require('./lib/index')

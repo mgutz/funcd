@@ -65,6 +65,15 @@ module.exports =
     assert.equal "<html><head>foobar</head></html>", Funcd.render page, layout
 
 
+  "should extend from file": ->
+    template = (t) ->
+      t.extends "#{__dirname}/layout.funcd"
+      t.block "content", ->
+        t.p "foo"
+
+    assert.equal "<body><p>foo</p></body>", Funcd.render template
+
+
   "should allow partials": ->
     partial = (t, first, last) ->
       t.p first + last

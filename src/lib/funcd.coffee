@@ -130,7 +130,12 @@ class Funcd
   doctype: (s) ->
     @buffer += doctypes[s.toString()] + @eol
 
+  # Extend a layout template.
+  #
+  # @param {String|Object} template Path or object.
   extends: (template) ->
+    if global? and typeof template is "string"
+      template = require(template)
     template @
 
   @mixin = (mixins) ->
@@ -243,10 +248,12 @@ if global?
     js = cs.compile(code, options)
     @script type:"text/javascript", js
 
+
 mixinTag = (tag) ->
   Funcd::[tag] = (attributes, inner) ->
     options = tag: tag, parseBody: tag != 'textarea', parseAttributes: true
     @_outerHtml options, attributes, inner
+
 
 mixinShortTag = (tag) ->
   Funcd::[tag] = (attributes) ->
@@ -254,10 +261,6 @@ mixinShortTag = (tag) ->
     if _.isObject(attributes)
       attrList = attributeList(tag, attributes)
     @buffer += @lead + "<#{tag}#{attrList}/>" + @eol
-
-
-
-
 
 
 # Code to run

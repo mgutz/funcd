@@ -5,7 +5,7 @@ fs = require("fs")
 path = require("path")
 require.extensions['.funcd'] = (module, filename) ->
   content = coffeescript.compile(fs.readFileSync(filename, 'utf8'), filename: filename)
-  module._compile(content, filename);
+  module._compile(content, filename)
 
 Funcd::coffeescript = (options, inner) ->
   self = @
@@ -21,6 +21,10 @@ Funcd::coffeescript = (options, inner) ->
   @script type:"text/javascript", jscode
 
 
+# Renders a template to a file.
+#
+# @param {String} sourceFilename
+# @param {String} outFilename
 Funcd.renderToFile = (sourceFilename, outFilename) ->
   content = Funcd.render(sourceFilename)
   fs.writeFileSync outFilename, content
@@ -35,35 +39,11 @@ Funcd.renderToFile = (sourceFilename, outFilename) ->
 # @param {Error} err Pass `new Error` as this argument.
 detectCallerPath = (referencePath, err) ->
   #console.log err.stack
-  for match, i in err.stack.match(/\(([^:]+).*\)$/mg) 
-    path = match.match(/\(([^:]+)/)[1] 
+  for match, i in err.stack.match(/\(([^:]+).*\)$/mg)
+    path = match.match(/\(([^:]+)/)[1]
     #console.log "PATH=#{path}"
     if path != referencePath
       return path
-  null  
-
-templateFunction2 = (file) ->
-  #console.log "TEMPLATEFUNCTION=#{file}"
-  path = require("path")
-
-  # compute absolute paths relative to caller not this file
-  if file.indexOf('/') != 0
-    callerPath = detectCallerPath(__filename, new Error)
-    #console.log "CALLERPATH=#{callerPath}"
-    file = path.join(path.dirname(callerPath), file)
-
-  file += ".funcd" unless file.match(/\.funcd$/)
-  content = require("fs").readFileSync(file, 'utf8')
-  sandbox = 
-    global: {}
-    module:
-      exports = {}
-  cs.run content, sandbox:sandbox
-  template = sandbox.module.exports
-
-
-templateFunction = (filename) ->
-  require filename
-
+  null
 
 module.exports = Funcd

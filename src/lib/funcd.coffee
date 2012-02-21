@@ -284,7 +284,7 @@ class Funcd
 
 
 #//// JQUERY (must be installed)
-if window?
+if jQuery?
   jQuery.fn.funcd = (template, args) ->
     @each ->
       $obj = jQuery(this)

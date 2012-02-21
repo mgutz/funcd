@@ -14,9 +14,10 @@
     "underscore": ""
   },
   "devDependencies": {
+    "asyncblock": "",
+    "chai": "",
     "coffee-script": "",
-    "mocha": "",
-    "chai": ""
+    "mocha": ""
   },
   "optionalDependencies": {},
   "scripts": {

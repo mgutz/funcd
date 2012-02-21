@@ -1,7 +1,7 @@
+asyncblock = require("asyncblock")
+
 task "build", "Builds the project", ->
   run "coffee --lint -c -o . src/"
-  
-task "html", "", ->
   writeHtml "src/test/index.funcd", "test/index.html"
 
 task "test", "runs tests", ->
@@ -13,10 +13,11 @@ writeHtml = (file, out) ->
   Funcd = require(".")
   Funcd.renderToFile file, out
 
-
 cp = require("child_process")
+
 run = (command) ->
-  cp.exec command, (error, stdout, stderr) ->
-    console.log stdout
-    console.log stderr if stderr?.length > 0
-    console.log "exec error: #{error}" if error?.length > 0
+  asyncblock (flow) ->
+    cp.exec command, flow.add(['stdout', 'stderr'])
+    results = flow.wait()
+    console.log results.stdout if results.stdout?.length > 0
+    console.error results.stderr if results.stderr?.length > 0

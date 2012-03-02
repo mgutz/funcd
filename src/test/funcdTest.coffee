@@ -21,8 +21,17 @@ module.exports =
         t.text "foo"
         t.em "bar"
 
-  "raw text should require some effort": ->
-    assert.equal "<a><i>apple</i></a>", Funcd.render (t) -> t.a t.raw("<i>apple</i>")
+  "should be able to pass raw strings to any element": ->
+    assert.equal "<a><i>apple</i></a>", Funcd.render (t) -> t.a t._raw("<i>apple</i>")
+
+  "should output raw text": ->
+    assert.equal "<i>apple</i>", Funcd.render (t) -> t.raw "<i>apple</i>"
+
+
+  "should output raw": ->
+    template = (t) ->
+      t.a class:"btn", -> t.raw "&raquo;"
+    assert.equal "<a class=\"btn\">&raquo;</a>", Funcd.render template
 
 
   "should allow nesting": ->

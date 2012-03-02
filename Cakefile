@@ -7,7 +7,6 @@ task "build", "Builds the project", ->
 task "test", "runs tests", ->
   run "mocha -u exports src/test/funcdTest.coffee"
 
-
 writeHtml = (file, out) ->
   # lazily require because funcd may not compile cleanly while developing
   Funcd = require(".")

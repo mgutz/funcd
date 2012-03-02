@@ -178,8 +178,9 @@ class Funcd
           # mixin's first argument is this object
           fn.apply @, [@].concat(args)
 
-  raw: (s) ->
+  _raw: (s) ->
     __raw: s
+
 
   # Renders a template function.
   #
@@ -221,6 +222,9 @@ class Funcd
     builder = @renderBuilder args...
     builder.toHtml()
 
+  # Add unescaped or raw text.
+  raw: (s) ->
+    @buffer += s
 
   # text element
   text: (s) ->

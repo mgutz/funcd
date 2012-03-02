@@ -11,12 +11,12 @@
     "node": "~0.6"
   },
   "dependencies": {
-    "underscore": ""
+    "underscore": "*",
+    "coffee-script": "*"
   },
   "devDependencies": {
     "asyncblock": "",
     "chai": "",
-    "coffee-script": "",
     "mocha": ""
   },
   "optionalDependencies": {},

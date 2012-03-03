@@ -19,3 +19,4 @@ logs
 result
 node_modules
 !.gitignore
+temp.funcd

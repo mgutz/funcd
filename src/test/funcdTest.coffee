@@ -1,5 +1,6 @@
 Funcd = require('..')
 {assert} = require('chai')
+fs = require('fs')
 
 module.exports =
 
@@ -77,6 +78,12 @@ module.exports =
 
   "should render from file": ->
     assert.equal "<body></body>", Funcd.render "#{__dirname}/layout"
+
+  "should have option to not cache files": ->
+    fs.writeFileSync "#{__dirname}/temp.funcd", "module.exports = (t) -> t.body()"
+    assert.equal "<body></body>", Funcd.render "#{__dirname}/temp"
+    fs.writeFileSync "#{__dirname}/temp.funcd", "module.exports = (t) -> t.p()"
+    assert.equal "<p></p>", Funcd.render nocache:true, "#{__dirname}/temp"
 
 
   "should render from file with variables": ->
@@ -225,8 +232,6 @@ module.exports =
         t.p "bah"
 
     assert.equal "<div id=\"item\" class=\"red\">foobar</div><div class=\"blue\"><p>bah</p></div>", Funcd.render template
-
-
 
   "should convert coffeescript to javascript (server-side only)": ->
     template = (t) ->

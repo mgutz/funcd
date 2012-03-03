@@ -10,6 +10,12 @@ if global?
 else
   _ = window._
 
+requireEx = (mod, nocache=false) ->
+  # node.js caches includes
+  if nocache
+    delete require.cache[require.resolve(mod)]
+  require(mod)
+
 
 idSequence = 0
 nextId = ->
@@ -118,6 +124,7 @@ mixinShortTag = (tag) ->
 class Funcd
   constructor: (opts = {}) ->
     @pretty = opts.pretty ? false
+    @options = opts
 
     self = @
     if opts.mixins
@@ -168,7 +175,7 @@ class Funcd
   # @param {String|Object} template Path or object.
   extends: (template) ->
     if typeof template is "string" and require?
-      template = require(template)
+      template = requireEx(template, @options.nocache)
     template @
 
   @mixin = (mixins) ->
@@ -200,16 +207,16 @@ class Funcd
     first = args[0]
 
     if _.isFunction(first)
-      template = args[0]
+      template = first
       options = {}
       args = args.slice(1)
     else if _.isString(first)
-      template = require(args[0])
+      template = require(first)
       options = {}
       args = args.slice(1)
     else if _.isObject(first)
-      options = args[0]
-      template = args[1]
+      options = first
+      template = if _.isFunction(args[1]) then args[1] else requireEx(args[1], options.nocache)
       args = args.slice(2)
 
 

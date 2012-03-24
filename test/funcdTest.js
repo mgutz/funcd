@@ -18,8 +18,11 @@
       }));
     },
     "should have full tags": function() {
-      return assert.equal("<div>foo</div>", Funcd.render(function(t) {
+      assert.equal("<div>foo</div>", Funcd.render(function(t) {
         return t.div("foo");
+      }));
+      return assert.equal("<textarea>foo</textarea>", Funcd.render(function(t) {
+        return t.textarea("foo");
       }));
     },
     "text should be escaped by default": function() {

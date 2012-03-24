@@ -10,6 +10,7 @@ module.exports =
 
   "should have full tags": ->
     assert.equal "<div>foo</div>", Funcd.render (t) -> t.div "foo"
+    assert.equal "<textarea>foo</textarea>", Funcd.render (t) -> t.textarea "foo"
 
 
   "text should be escaped by default": ->

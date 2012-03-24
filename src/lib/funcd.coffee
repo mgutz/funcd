@@ -108,7 +108,7 @@ attributeList = (tag, obj={}) ->
 
 mixinTag = (tag) ->
   Funcd::[tag] = (attributes, inner) ->
-    options = tag: tag, parseBody: tag != 'textarea', parseAttributes: true
+    options = tag: tag, parseBody: true, parseAttributes: true
     @_outerHtml options, attributes, inner
 
 

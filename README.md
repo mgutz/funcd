@@ -75,7 +75,7 @@ Render from files
       t.div name + " " + city
 
     # <div>foo San Diego</div>
-    Funcd.render "#{__dirname}/test", "foo", "San Diego" 
+    Funcd.render "#{__dirname}/test", "foo", "San Diego"
 
 
 jQuery Asynchronous updates
@@ -87,16 +87,16 @@ jQuery Asynchronous updates
 
           t.coffeescript """
             update = ($el) ->
-              setTimeout (-> 
+              setTimeout (->
                 $el.funcd (t) -> t.div "bar baby!"
               ), 2000
 
             template = (t) ->
               t.div style:"background-color:#999; color:#000", "inserted via template"
-              t.div "data-funcd-async":update, "this will change in 2 seconds"
+              t.div "data-funcd":update, "this will change in 2 seconds"
 
-            $ ->
-              $('#content').funcd template
+    $ ->
+      $('#content').funcd template
           """
 
 

@@ -10,6 +10,8 @@ if global?
 else
   _ = window._
 
+DATA_FUNCD_ASYNC = 'data-funcd'
+
 requireEx = (mod, nocache=false) ->
   # node.js caches includes
   if nocache
@@ -277,9 +279,9 @@ class Funcd
             innerText = arg.__raw
           else
             if parseAttributes
-              if arg["data-funcd-async"]
-                asyncfn = arg["data-funcd-async"]
-                delete arg["data-funcd-async"]
+              if arg[DATA_FUNCD_ASYNC]
+                asyncfn = arg[DATA_FUNCD_ASYNC]
+                delete arg[DATA_FUNCD_ASYNC]
                 unless arg.id
                   arg.id = nextId()
                 @asyncCallbacks.push lambda:asyncfn, id:arg.id

@@ -148,7 +148,7 @@ class Funcd
   applyAsyncCallbacks: ($parent) ->
     return unless @asyncCallbacks
     for pair in @asyncCallbacks
-      pair.lambda jQuery('#'+pair.id), $parent
+      pair.lambda jQuery('#'+pair.id)
 
   block: (name, attributes, inner) ->
     @buffers.push @buffer
@@ -241,6 +241,12 @@ class Funcd
     # replace all blocks
     for k, innerHtml of @blocks
       @buffer = @buffer.replace(///___#{k}___///g, innerHtml)
+    if @asyncCallbacks
+      that = @
+      setTimeout ->
+        that.applyAsyncCallbacks()
+      , 1
+
     @buffer
 
   @compile: (filenameOrObject) ->
@@ -301,7 +307,6 @@ if jQuery?
       $obj = jQuery(this)
       builder = Funcd.renderBuilder(template)
       $obj.html builder.toHtml()
-      builder.applyAsyncCallbacks $obj
 
 # Code to run
 do ->

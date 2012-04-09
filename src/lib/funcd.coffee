@@ -78,6 +78,7 @@ mergeElements = (args...) ->
 #
 # @param {String} value
 escapeHtml = (value) ->
+  return "" if !value
   value.replace htmlChars, replaceToken
 
 tokensToReplace =

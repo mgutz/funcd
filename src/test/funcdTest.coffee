@@ -17,6 +17,10 @@ module.exports =
     assert.equal "<a>1 &lt; 2</a>", Funcd.render (t) -> t.a "1 < 2"
 
 
+  "should allow empty text": ->
+    assert.equal '<i class="bar"></i>', Funcd.render (t) -> t.i class:"bar"
+    assert.equal '<i></i>', Funcd.render (t) -> t.i()
+
   "should allow text nodes": ->
     assert.equal '<p>foo<em>bar</em></p>', Funcd.render (t) ->
       t.p ->

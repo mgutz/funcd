@@ -30,6 +30,16 @@
         return t.a("1 < 2");
       }));
     },
+    "should allow empty text": function() {
+      assert.equal('<i class="bar"></i>', Funcd.render(function(t) {
+        return t.i({
+          "class": "bar"
+        });
+      }));
+      return assert.equal('<i></i>', Funcd.render(function(t) {
+        return t.i();
+      }));
+    },
     "should allow text nodes": function() {
       return assert.equal('<p>foo<em>bar</em></p>', Funcd.render(function(t) {
         return t.p(function() {

@@ -194,7 +194,7 @@ class Funcd
 
   # Renders a template function.
   #
-  # @param {Function} template
+  # @param {Object|Function|String} template
   render: (template, args...) ->
     if typeof template == 'function'
       template @, args...
@@ -209,7 +209,11 @@ class Funcd
     args = Array.prototype.slice.call(arguments)
     first = args[0]
 
-    if _.isFunction(first)
+    if _.isFunction(first.main)
+      template = first.main
+      options = {}
+      args = args.slice(1)
+    else if _.isFunction(first)
       template = first
       options = {}
       args = args.slice(1)

@@ -7,6 +7,11 @@ module.exports =
   "should have short tags": ->
     assert.equal "<br/>", Funcd.render (t) -> t.br()
 
+  "should allow exports.main to be the default template function": ->
+    template =
+      main: (t) -> t.br()
+    assert.equal "<br/>", Funcd.render(template)
+
 
   "should have full tags": ->
     assert.equal "<div>foo</div>", Funcd.render (t) -> t.div "foo"

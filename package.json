@@ -17,7 +17,7 @@
   "devDependencies": {
     "shelljs": "",
     "chai": "~1.0.1",
-    "mocha": ""
+    "mocha": "~1.0.3"
   },
   "optionalDependencies": {},
   "scripts": {

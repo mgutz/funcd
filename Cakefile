@@ -5,7 +5,7 @@ task "build", "Builds the project", ->
   writeHtml "src/test/index.funcd", "test/index.html"
 
 task "test", "runs tests", ->
-  o.exec "mocha -u exports src/test/funcdTest.coffee"
+  o.exec "mocha -u exports --compilers coffee:coffee-script src/test/funcdTest.coffee"
 
 writeHtml = (file, out) ->
   # lazily require because funcd may not compile cleanly while developing

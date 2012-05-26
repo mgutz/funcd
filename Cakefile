@@ -10,5 +10,5 @@ task "test", "runs tests", ->
 writeHtml = (file, out) ->
   # lazily require because funcd may not compile cleanly while developing
   Funcd = require(".")
-  Funcd.renderToFile file, out
+  Funcd.renderToFile file, out, {nocache: true}
 

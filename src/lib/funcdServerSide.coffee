@@ -25,8 +25,9 @@ Funcd::coffeescript = (options, inner) ->
 #
 # @param {String} sourceFilename
 # @param {String} outFilename
-Funcd.renderToFile = (sourceFilename, outFilename) ->
-  content = Funcd.render(sourceFilename)
+Funcd.renderToFile = (sourceFilename, outFilename, options) ->
+  options ||= {}
+  content = Funcd.render(options, sourceFilename)
   fs.writeFileSync outFilename, content
 
 

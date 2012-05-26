@@ -206,26 +206,31 @@ class Funcd
   # @param {object} options The otpions to pass to Funcd.
   # @param {Function} template
   @renderBuilder: (options, template, args...) ->
-    args = Array.prototype.slice.call(arguments)
+    args = [].slice.call(arguments)
     first = args[0]
 
     if _.isFunction(first.main)
       template = first.main
       options = {}
       args = args.slice(1)
+
     else if _.isFunction(first)
       template = first
       options = {}
       args = args.slice(1)
+
     else if _.isString(first)
-      template = require(first)
+      template = requireEx(first)
       if typeof template.main is "function"
         template = template.main
       options = {}
       args = args.slice(1)
+
     else if _.isObject(first)
       options = first
       template = if _.isFunction(args[1]) then args[1] else requireEx(args[1], options.nocache)
+      if typeof template.main is "function"
+        template = template.main
       args = args.slice(2)
 
 

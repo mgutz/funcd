@@ -219,6 +219,8 @@ class Funcd
       args = args.slice(1)
     else if _.isString(first)
       template = require(first)
+      if typeof template.main is "function"
+        template = template.main
       options = {}
       args = args.slice(1)
     else if _.isObject(first)

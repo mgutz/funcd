@@ -16,7 +16,7 @@ requireEx = (mod, nocache=false) ->
   # node.js caches includes
   if nocache
     delete require.cache[require.resolve(mod)]
-  require(mod)
+  getTemplateFunction require(mod)
 
 
 idSequence = 0
@@ -123,6 +123,15 @@ mixinShortTag = (tag) ->
     @buffer += @lead + "<#{tag}#{attrList}/>" + @eol
 
 
+getTemplateFunction = (template) ->
+  if typeof template is "function"
+    template
+  else if typeof template.main is "function"
+    template.main
+  else
+    throw new Error("template argument must be an object or function")
+
+
 
 class Funcd
   constructor: (opts = {}) ->
@@ -179,6 +188,8 @@ class Funcd
   extends: (template) ->
     if typeof template is "string" and require?
       template = requireEx(template, @options.nocache)
+    else
+      template = getTemplateFunction(template)
     template @
 
   @mixin = (mixins) ->
@@ -198,6 +209,8 @@ class Funcd
   render: (template, args...) ->
     if typeof template == 'function'
       template @, args...
+    else if typeof template.main == 'function'
+      template.main @, args...
     else
       @text template.toString()
 
@@ -221,16 +234,12 @@ class Funcd
 
     else if _.isString(first)
       template = requireEx(first)
-      if typeof template.main is "function"
-        template = template.main
       options = {}
       args = args.slice(1)
 
     else if _.isObject(first)
       options = first
       template = if _.isFunction(args[1]) then args[1] else requireEx(args[1], options.nocache)
-      if typeof template.main is "function"
-        template = template.main
       args = args.slice(2)
 
 

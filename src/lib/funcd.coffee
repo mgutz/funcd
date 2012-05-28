@@ -228,27 +228,24 @@ class Funcd
     if typeof first.main is "function"
       template = first.main
       options = {}
-      args = args.slice(1)
 
     else if typeof first is "function"
       template = first
       options = {}
-      args = args.slice(1)
 
     else if typeof first is "string"
       template = requireEx(first)
       options = {}
-      args = args.slice(1)
 
     else if _.isObject(first)
       options = first
       args1 = args[1]
       template = if typeof args1 is "function" then args1 else requireEx(args1, options.nocache)
-      args = args.slice(2)
-
+      args.shift()
 
     builder = new Funcd(options)
-    template.apply builder, [builder].concat(args)
+    args[0] = builder
+    template.apply builder, args
     builder.toHtml()
 
 

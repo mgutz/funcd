@@ -10,6 +10,7 @@ if global?
 else
   _ = window._
 
+_slice = [].slice
 DATA_FUNCD_ASYNC = 'data-funcd'
 
 requireEx = (mod, nocache=false) ->
@@ -220,39 +221,36 @@ class Funcd
   #
   # @param {object} options The otpions to pass to Funcd.
   # @param {Function} template
-  @renderBuilder: (options, template, args...) ->
-    args = [].slice.call(arguments)
+  @render: (options, template) ->
+    args = _slice.call(arguments)
     first = args[0]
 
-    if _.isFunction(first.main)
+    if typeof first.main is "function"
       template = first.main
       options = {}
       args = args.slice(1)
 
-    else if _.isFunction(first)
+    else if typeof first is "function"
       template = first
       options = {}
       args = args.slice(1)
 
-    else if _.isString(first)
+    else if typeof first is "string"
       template = requireEx(first)
       options = {}
       args = args.slice(1)
 
     else if _.isObject(first)
       options = first
-      template = if _.isFunction(args[1]) then args[1] else requireEx(args[1], options.nocache)
+      args1 = args[1]
+      template = if typeof args1 is "function" then args1 else requireEx(args1, options.nocache)
       args = args.slice(2)
 
 
     builder = new Funcd(options)
     template.apply builder, [builder].concat(args)
-    builder
-
-
-  @render: (args...) ->
-    builder = @renderBuilder args...
     builder.toHtml()
+
 
   # Add unescaped or raw text.
   raw: (s) ->
@@ -330,8 +328,7 @@ if jQuery?
   jQuery.fn.funcd = (template, args) ->
     @each ->
       $obj = jQuery(this)
-      builder = Funcd.renderBuilder(template)
-      $obj.html builder.toHtml()
+      $obj.html Funcd.render(template)
 
 # Code to run
 do ->

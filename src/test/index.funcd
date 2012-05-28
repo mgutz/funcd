@@ -10,13 +10,13 @@ module.exports = (t) ->
       t.script src:"../lib/funcd.js"
       t.coffeescript """
         update = ($el) ->
-          setTimeout (-> 
+          setTimeout (->
             $el.funcd (t) -> t.div "bar baby!"
           ), 2000
 
         template = (t) ->
           t.div style:"background-color:#999; color:#000", "inserted via template"
-          t.div "data-funcd-async":update, "change in a bit"
+          t.div "data-funcd":update, "change in a bit"
 
         $ ->
           $('#content').funcd template

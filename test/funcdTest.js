@@ -26,6 +26,17 @@
       };
       return assert.equal("<br/>", Funcd.render(template));
     },
+    "should allow css tyles": function() {
+      var template;
+      template = {
+        main: function(t) {
+          return t.style(function() {
+            return "color: red;";
+          });
+        }
+      };
+      return assert.equal('<style type="text/css">color: red;</style>', Funcd.render(template));
+    },
     "should have full tags": function() {
       assert.equal("<div>foo</div>", Funcd.render(function(t) {
         return t.div("foo");

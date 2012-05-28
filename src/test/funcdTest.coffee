@@ -12,6 +12,11 @@ module.exports =
       main: (t) -> t.br()
     assert.equal "<br/>", Funcd.render(template)
 
+  "should allow css tyles": ->
+    template = (t) ->
+        t.style "color: red;"
+    assert.equal '<style type="text/css">color: red;</style>', Funcd.render(template)
+
 
   "should have full tags": ->
     assert.equal "<div>foo</div>", Funcd.render (t) -> t.div "foo"

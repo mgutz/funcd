@@ -7,15 +7,15 @@ module.exports =
   "should have short tags": ->
     assert.equal "<br/>", Funcd.render (t) -> t.br()
 
-  "should allow exports.main to be the default template function": ->
-    template =
-      main: (t) -> t.br()
-    assert.equal "<br/>", Funcd.render(template)
+  # "should allow exports.main to be the default template function": ->
+  #   template =
+  #     main: (t) -> t.br()
+  #   assert.equal "<br/>", Funcd.render(template)
 
   "should allow css tyles": ->
     template = (t) ->
         t.style "color: red;"
-    assert.equal '<style type="text/css">color: red;</style>', Funcd.render(template)
+    assert.equal '<style>color: red;</style>', Funcd.render(template)
 
 
   "should have full tags": ->
@@ -73,7 +73,7 @@ module.exports =
       t.block 'scripts', ->
         t.script "var one;"
 
-    assert.equal "<html><head>foo<script type=\"text/javascript\">var one;</script></head></html>", Funcd.render page
+    assert.equal "<html><head>foo<script>var one;</script></head></html>", Funcd.render page
 
 
   "should allow layouts via variable": ->
@@ -157,7 +157,7 @@ module.exports =
 
 
   "should create default attributes": ->
-    assert.equal '<script type="text/javascript">var foo;</script>', Funcd.render (t) -> t.script "var foo;"
+    assert.equal '<script>var foo;</script>', Funcd.render (t) -> t.script "var foo;"
 
 
   "should not escape script": ->

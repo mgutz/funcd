@@ -17,21 +17,12 @@
         return t.br();
       }));
     },
-    "should allow exports.main to be the default template function": function() {
-      var template;
-      template = {
-        main: function(t) {
-          return t.br();
-        }
-      };
-      return assert.equal("<br/>", Funcd.render(template));
-    },
     "should allow css tyles": function() {
       var template;
       template = function(t) {
         return t.style("color: red;");
       };
-      return assert.equal('<style type="text/css">color: red;</style>', Funcd.render(template));
+      return assert.equal('<style>color: red;</style>', Funcd.render(template));
     },
     "should have full tags": function() {
       assert.equal("<div>foo</div>", Funcd.render(function(t) {
@@ -114,7 +105,7 @@
           return t.script("var one;");
         });
       };
-      return assert.equal("<html><head>foo<script type=\"text/javascript\">var one;</script></head></html>", Funcd.render(page));
+      return assert.equal("<html><head>foo<script>var one;</script></head></html>", Funcd.render(page));
     },
     "should allow layouts via variable": function() {
       var layout, page;
@@ -219,7 +210,7 @@
       return assert.equal("<p>barbaz</p><p>bar</p>", Funcd.render(template));
     },
     "should create default attributes": function() {
-      return assert.equal('<script type="text/javascript">var foo;</script>', Funcd.render(function(t) {
+      return assert.equal('<script>var foo;</script>', Funcd.render(function(t) {
         return t.script("var foo;");
       }));
     },

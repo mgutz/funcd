@@ -80,35 +80,42 @@ mergeElements = (args...) ->
 # Read http://www.squarefree.com/securitytips/web-developers.html
 #
 # @param {String} value
-escapeHtml = (value) ->
-  return "" if !value
-  value.replace htmlChars, replaceToken
+# escapeHtml = (value) ->
+#   return "" if !value
+#   value.replace htmlChars, replaceToken
 
-tokensToReplace =
-    '&': '&amp;'
-    '<': '&lt;'
-    '>': '&gt;'
-    '"': "&quot;"
-    "'": "&#39;"
-replaceToken = (token) ->
-    tokensToReplace[token] || token
+# tokensToReplace =
+#     '&': '&amp;'
+#     '<': '&lt;'
+#     '>': '&gt;'
+#     '"': "&quot;"
+#     "'": "&#39;"
+# replaceToken = (token) ->
+#     tokensToReplace[token] || token
 
-htmlChars = /[&<>"']/g
+# htmlChars = /[&<>"']/g
 
+escapeHtml = (txt) ->
+  txt.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
 # Builds the attribute list for a tag.
 #
 # Checks `defaultAttributes` for attributes.
 attributeList = (tag, obj={}) ->
-  attributes =
-    if defaultAttributes[tag]
-      _.extend(_.clone(defaultAttributes[tag]), obj)
-    else
-      obj
+  # tagAttributes = defaultAttributes[tag]
+  # attributes = if tagAttributes then _.defaults(obj, tagAttributes) else obj
+
+
+  # attributes =
+  #   if defaultAttributes[tag]
+  #     _.extend(_.clone(defaultAttributes[tag]), obj)
+  #   else
+  #     obj
 
   list = ''
-  for name, val of attributes
-    list += " #{name}=\"#{escapeHtml(val)}\""
+  for name, val of obj
+    #list += " #{name}=\"#{escapeHtml(val)}\""
+    list += " #{name}=\"#{val}\""
   list
 
 
@@ -123,14 +130,12 @@ mixinShortTag = (tag) ->
     attrList = ""
     if _.isObject(attributes)
       attrList = attributeList(tag, attributes)
-    @buffer += @lead + "<#{tag}#{attrList}/>" + @eol
+    @buffer += "<#{tag}#{attrList}/>"
 
 
 getTemplateFunction = (template) ->
   if typeof template is "function"
     template
-  else if typeof template.main is "function"
-    template.main
   else
     throw new Error("template argument must be an object or function")
 
@@ -138,7 +143,6 @@ getTemplateFunction = (template) ->
 
 class Funcd
   constructor: (opts = {}) ->
-    @pretty = opts.pretty ? false
     @options = opts
 
     self = @
@@ -150,10 +154,8 @@ class Funcd
             fn.apply self, [self].concat(args)
 
     # leading chars for indentation
-    @lead = ''
 
-    @blocks = {}
-    @eol = if @pretty then '\n' else ''
+    @blocks = null
     @buffers = []
     @asyncCallbacks = []
 
@@ -164,8 +166,10 @@ class Funcd
     return unless @asyncCallbacks
     for pair in @asyncCallbacks
       pair.lambda jQuery('#'+pair.id)
+    return
 
   block: (name, attributes, inner) ->
+    @blocks ?= {}
     @buffers.push @buffer
     @buffer = ""
 
@@ -178,11 +182,11 @@ class Funcd
     @buffer = @buffers.pop()
 
     # mark the block in the string for replacment later
-    @buffer += @lead + "___#{name}___" + @eol unless exists?
+    @buffer += "___#{name}___" unless exists?
 
 
   doctype: (s) ->
-    @buffer += doctypes[s.toString()] + @eol
+    @buffer += doctypes[s.toString()]
 
 
   # Extend a layout template.
@@ -201,6 +205,7 @@ class Funcd
         Funcd::[name] = (args...) ->
           # mixin's first argument is this object
           fn.apply @, [@].concat(args)
+    return
 
   _raw: (s) ->
     __raw: s
@@ -212,8 +217,6 @@ class Funcd
   render: (template, args...) ->
     if typeof template == 'function'
       template @, args...
-    else if typeof template.main == 'function'
-      template.main @, args...
     else
       @text template.toString()
 
@@ -221,15 +224,11 @@ class Funcd
   #
   # @param {object} options The otpions to pass to Funcd.
   # @param {Function} template
-  @render: (options, template) ->
+  @render: (first, template) ->
     args = _slice.call(arguments)
     first = args[0]
 
-    if typeof first.main is "function"
-      template = first.main
-      options = {}
-
-    else if typeof first is "function"
+    if typeof first is "function"
       template = first
       options = {}
 
@@ -258,9 +257,11 @@ class Funcd
     @buffer += escapeHtml(s)
 
   toHtml: ->
-    # replace all blocks
-    for k, innerHtml of @blocks
-      @buffer = @buffer.replace(///___#{k}___///g, innerHtml)
+    if @blocks != null
+      # replace all blocks
+      for k, innerHtml of @blocks
+        @buffer = @buffer.replace(///___#{k}___///g, innerHtml)
+
     if @asyncCallbacks
       that = @
       setTimeout ->
@@ -284,10 +285,11 @@ class Funcd
     for arg in [attrs, inner]
       switch typeof arg
         when 'string'
-          if rawContentElements.indexOf(tag) < 0
-            innerText += escapeHtml(arg)
-          else
+          #if rawContentElements.indexOf(tag) < 0
+          if tag is "script" or tag is "style"
             innerText += arg
+          else
+            innerText += escapeHtml(arg)
         when 'number'
           innerText += escapeHtml(arg.toString())
         when 'function'
@@ -308,16 +310,15 @@ class Funcd
               innerText += arg.toString()
 
     # use default attributes if no attributes were passed
-    if parseAttributes and attributes == "" and defaultAttributes[tag]
-      attributes += attributeList(tag)
+    # if parseAttributes and attributes == "" and defaultAttributes[tag]
+    #   attributes += attributeList(tag)
 
-    @buffer += @lead + "<#{tag}#{attributes}>#{@eol}" if tag
+    @buffer += "<#{tag}#{attributes}>" if tag
     if parseBody
-      @lead += '  ' if @pretty
-      @buffer += @lead + innerText + @eol if innerText.length > 0
-      innerHtmlFn?.apply @
-      @lead = @lead[0...-2] if @pretty
-    @buffer += @lead + "</#{tag}>#{@eol}" if tag
+      @buffer += innerText if innerText.length > 0
+      if innerHtmlFn != null
+        innerHtmlFn.apply @
+    @buffer += "</#{tag}>" if tag
 
 
 #//// JQUERY (must be installed)
@@ -328,14 +329,13 @@ if jQuery?
       $obj.html Funcd.render(template)
 
 # Code to run
-do ->
-  for tag in mergeElements(elements.full, elements.obsoleteFull)
-    mixinTag tag
+for tag in mergeElements(elements.full, elements.obsoleteFull)
+  mixinTag tag
 
-  for tag in mergeElements(elements.short, elements.obsoleteShort)
-    mixinShortTag tag
+for tag in mergeElements(elements.short, elements.obsoleteShort)
+  mixinShortTag tag
 
-  if global?
-    module.exports = Funcd
-  else
-    window.Funcd = Funcd
+if global?
+  module.exports = Funcd
+else
+  window.Funcd = Funcd

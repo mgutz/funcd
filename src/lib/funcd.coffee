@@ -96,7 +96,10 @@ mergeElements = (args...) ->
 # htmlChars = /[&<>"']/g
 
 escapeHtml = (txt) ->
-  txt.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+  if txt?
+    txt.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+  else
+    txt
 
 # Builds the attribute list for a tag.
 #
@@ -283,6 +286,7 @@ class Funcd
     innerHtmlFn = null
 
     for arg in [attrs, inner]
+      continue if arg is null
       switch typeof arg
         when 'string'
           #if rawContentElements.indexOf(tag) < 0

@@ -37,6 +37,13 @@
         return t.a("1 < 2");
       }));
     },
+    "attributes should be escaped": function() {
+      return assert.equal("<a href=\"&lt;\"></a>", Funcd.render(function(t) {
+        return t.a({
+          href: "<"
+        });
+      }));
+    },
     "should allow empty text": function() {
       assert.equal('<i class="bar"></i>', Funcd.render(function(t) {
         return t.i({

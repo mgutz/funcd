@@ -114,8 +114,8 @@ attributeList = (tag, obj={}) ->
 
   list = ''
   for name, val of obj
-    #list += " #{name}=\"#{escapeHtml(val)}\""
-    list += " #{name}=\"#{val}\""
+    list += " #{name}=\"#{escapeHtml(val)}\""
+    #list += " #{name}=\"#{val}\""
   list
 
 

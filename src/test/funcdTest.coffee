@@ -26,6 +26,10 @@ module.exports =
   "text should be escaped by default": ->
     assert.equal "<a>1 &lt; 2</a>", Funcd.render (t) -> t.a "1 < 2"
 
+  "attributes should be escaped": ->
+    assert.equal "<a href=\"&lt;\"></a>", Funcd.render (t) -> t.a href:"<"
+
+
 
   "should allow empty text": ->
     assert.equal '<i class="bar"></i>', Funcd.render (t) -> t.i class:"bar"

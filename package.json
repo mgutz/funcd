@@ -15,9 +15,9 @@
     "coffee-script": "~1.3.3"
   },
   "devDependencies": {
-    "shelljs": "",
+    "shelljs": "~0.0.6pre2",
     "chai": "~1.0.1",
-    "mocha": "git://github.com/mgutz/mocha.git"
+    "mocha": "~1.3.0"
   },
   "optionalDependencies": {},
   "scripts": {

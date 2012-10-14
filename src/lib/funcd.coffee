@@ -96,7 +96,7 @@ mergeElements = (args...) ->
 # htmlChars = /[&<>"']/g
 
 escapeHtml = (txt) ->
-  if txt?
+  if typeof txt == 'string'
     txt.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
   else
     txt

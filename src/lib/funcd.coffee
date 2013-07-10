@@ -10,22 +10,6 @@ if global?
 else
   _ = window._
 
-_slice = [].slice
-DATA_FUNCD_ASYNC = 'data-funcd'
-
-requireEx = (mod, nocache=false) ->
-  # node.js caches includes
-  if nocache
-    delete require.cache[require.resolve(mod)]
-  getTemplateFunction require(mod)
-
-
-idSequence = 0
-nextId = ->
-  idSequence += 1
-  "funcd-async-" + idSequence
-
-
 doctypes =
   'default': '<!DOCTYPE html>'
   '5': '<!DOCTYPE html>'
@@ -37,7 +21,6 @@ doctypes =
   'basic': '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">'
   'mobile': '<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.2//EN" "http://www.openmobilealliance.org/tech/DTD/xhtml-mobile12.dtd">'
   'ce': '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "ce-html-1.0-transitional.dtd">'
-
 
 elements =
   full: 'a abbr address article aside audio b bdi bdo blockquote body button
@@ -105,20 +88,9 @@ escapeHtml = (txt) ->
 #
 # Checks `defaultAttributes` for attributes.
 attributeList = (tag, obj={}) ->
-  # tagAttributes = defaultAttributes[tag]
-  # attributes = if tagAttributes then _.defaults(obj, tagAttributes) else obj
-
-
-  # attributes =
-  #   if defaultAttributes[tag]
-  #     _.extend(_.clone(defaultAttributes[tag]), obj)
-  #   else
-  #     obj
-
   list = ''
   for name, val of obj
     list += " #{name}=\"#{escapeHtml(val)}\""
-    #list += " #{name}=\"#{val}\""
   list
 
 
@@ -136,14 +108,6 @@ mixinShortTag = (tag) ->
     @buffer += "<#{tag}#{attrList}/>"
 
 
-getTemplateFunction = (template) ->
-  if typeof template is "function"
-    template
-  else
-    throw new Error("template argument must be an object or function")
-
-
-
 class Funcd
   constructor: (opts = {}) ->
     @options = opts
@@ -154,22 +118,14 @@ class Funcd
         do (name, fn) ->
           self[name] = (args...) ->
             # mixin's first argument is this object
-            fn.apply self, [self].concat(args)
+            fn.apply self, args
 
     # leading chars for indentation
 
     @blocks = null
     @buffers = []
-    @asyncCallbacks = []
-
     @buffer = ""
 
-
-  applyAsyncCallbacks: ($parent) ->
-    return unless @asyncCallbacks
-    for pair in @asyncCallbacks
-      pair.lambda jQuery('#'+pair.id)
-    return
 
   block: (name, attributes, inner) ->
     @blocks ?= {}
@@ -195,19 +151,17 @@ class Funcd
   # Extend a layout template.
   #
   # @param {String|Object} template Path or object.
-  extends: (template) ->
-    if typeof template is "string" and require?
-      template = requireEx(template, @options.nocache)
-    else
-      template = getTemplateFunction(template)
-    template @
+  extends: (template, args...) ->
+    if typeof template is "string" and global?
+      template = Funcd.compileFile(template)
+    template.apply @, args
 
   @mixin = (mixins) ->
     for name, fn of mixins
       do (name, fn) ->
         Funcd::[name] = (args...) ->
           # mixin's first argument is this object
-          fn.apply @, [@].concat(args)
+          fn.apply @, args
     return
 
   _raw: (s) ->
@@ -218,36 +172,31 @@ class Funcd
   #
   # @param {Object|Function|String} template
   render: (template, args...) ->
-    if typeof template == 'function'
-      template @, args...
+    if typeof template is 'function'
+      template.apply @, args
     else
       @text template.toString()
 
+
   # Renders a template function. Class method.
   #
-  # @param {object} options The otpions to pass to Funcd.
+  # @param {object} options The options to pass to Funcd.
   # @param {Function} template
-  @render: (first, template) ->
-    args = _slice.call(arguments)
-    first = args[0]
+  @render: (options, locals...) ->
 
-    if typeof first is "function"
-      template = first
+    # Funcd.render template, 'hello', 1
+    if typeof options is "function"
+      template = options
       options = {}
 
-    else if typeof first is "string"
-      template = requireEx(first)
-      options = {}
+    else if _.isObject(options)
+      template = locals[0]
+      locals = locals.slice(1)
 
-    else if _.isObject(first)
-      options = first
-      args1 = args[1]
-      template = if typeof args1 is "function" then args1 else requireEx(args1, options.nocache)
-      args.shift()
-
+    if typeof template isnt "function"
+      throw new Error(template + 'is not a function')
     builder = new Funcd(options)
-    args[0] = builder
-    template.apply builder, args
+    template.apply builder, locals
     builder.toHtml()
 
 
@@ -265,17 +214,11 @@ class Funcd
       for k, innerHtml of @blocks
         @buffer = @buffer.replace(///___#{k}___///g, innerHtml)
 
-    if @asyncCallbacks
-      that = @
-      setTimeout ->
-        that.applyAsyncCallbacks()
-      , 1
-
     @buffer
 
-  @compile: (filenameOrObject) ->
-    (args...) ->
-      Funcd.render filenameOrObject, args...
+  # @compile: (filenameOrObject) ->
+  #   (args...) ->
+  #     Funcd.render filenameOrObject, args...
 
 
   #////////////// Protected methods
@@ -289,7 +232,6 @@ class Funcd
       continue if arg is null
       switch typeof arg
         when 'string'
-          #if rawContentElements.indexOf(tag) < 0
           if tag is "script" or tag is "style"
             innerText += arg
           else
@@ -303,20 +245,11 @@ class Funcd
             innerText = arg.__raw
           else
             if parseAttributes
-              if arg[DATA_FUNCD_ASYNC]
-                asyncfn = arg[DATA_FUNCD_ASYNC]
-                delete arg[DATA_FUNCD_ASYNC]
-                unless arg.id
-                  arg.id = nextId()
-                @asyncCallbacks.push lambda:asyncfn, id:arg.id
               attributes += attributeList(tag, arg)
             else if arg
               innerText += arg.toString()
 
     # use default attributes if no attributes were passed
-    # if parseAttributes and attributes == "" and defaultAttributes[tag]
-    #   attributes += attributeList(tag)
-
     @buffer += "<#{tag}#{attributes}>" if tag
     if parseBody
       @buffer += innerText if innerText.length > 0
@@ -324,20 +257,19 @@ class Funcd
         innerHtmlFn.apply @
     @buffer += "</#{tag}>" if tag
 
-
-#//// JQUERY (must be installed)
-if jQuery?
-  jQuery.fn.funcd = (template, args) ->
-    @each ->
-      $obj = jQuery(this)
-      $obj.html Funcd.render(template)
-
 # Code to run
 for tag in mergeElements(elements.full, elements.obsoleteFull)
   mixinTag tag
 
 for tag in mergeElements(elements.short, elements.obsoleteShort)
   mixinShortTag tag
+
+#//// JQUERY (must be installed)
+if jQuery?
+  jQuery.fn.funcd = (template, locals...) ->
+    @each ->
+      $obj = jQuery(this)
+      $obj.html Funcd.render(template, locals...)
 
 if global?
   module.exports = Funcd

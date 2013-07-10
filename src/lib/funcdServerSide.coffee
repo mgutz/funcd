@@ -7,7 +7,7 @@ require.extensions['.funcd'] = (module, filename) ->
   content = coffeescript.compile(fs.readFileSync(filename, 'utf8'), filename: filename)
   module._compile(content, filename)
 
-Funcd::coffeescript = (options, inner) ->
+Funcd::coffee = (options, inner) ->
   self = @
   if arguments.length == 1
     inner = options
@@ -21,15 +21,31 @@ Funcd::coffeescript = (options, inner) ->
   @script type:"text/javascript", jscode
 
 
+# Compiles a funcd template
+Funcd.compile = (source, filename='') ->
+  js = coffeescript.compile(source, filename: filename, bare: true)
+
+  _exports = {}
+  _module = exports: _exports
+  fn = new Function('exports', 'require', 'module', js)
+  fn _exports, null, _module
+  _module.exports
+
+
+# Compiles a funcd template
+Funcd.compileFile = (filename) ->
+  source = fs.readFileSync(filename, 'utf8')
+  Funcd.compile source, filename
+
+
 # Renders a template to a file.
 #
 # @param {String} sourceFilename
 # @param {String} outFilename
-Funcd.renderToFile = (sourceFilename, outFilename, options) ->
-  options ||= {}
-  content = Funcd.render(options, sourceFilename)
-  fs.writeFileSync outFilename, content
-
+Funcd.renderFile = (filename, args...) ->
+  template = Funcd.compileFile(filename)
+  throw new Error('File did not module.exports a single function') if typeof template isnt 'function'
+  text = Funcd.render(template, args...)
 
 # Detects the path of the calling function.
 #

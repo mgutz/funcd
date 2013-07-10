@@ -1,14 +1,15 @@
-o = require("shelljs")
+$ = require("projmate-shell")
+Fs = require('fs')
+Funcd = require(".")
 
 task "build", "Builds the project", ->
-  o.exec "coffee --lint -c -o . src/"
-  writeHtml "src/test/index.funcd", "test/index.html"
+  $.coffee "-c -o . src/"
 
 task "test", "runs tests", ->
-  o.exec "mocha -u exports --compilers coffee:coffee-script src/test/funcdTest.coffee"
+  $.run "#{$.which('mocha')} -u exports --compilers coffee:coffee-script src/test/funcdTest.coffee", ->
 
-writeHtml = (file, out) ->
+task "example", "Creates test/index.html", ->
   # lazily require because funcd may not compile cleanly while developing
-  Funcd = require(".")
-  Funcd.renderToFile file, out, {nocache: true}
+  html = Funcd.renderFile('src/test/index.coffee')
+  Fs.writeFileSync 'test/index.html', html
 

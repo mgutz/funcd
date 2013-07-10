@@ -1,2 +1,0 @@
-module.exports = (t, name, from) ->
-  t.p "#{name} #{from}"
